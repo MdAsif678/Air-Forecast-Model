@@ -1,0 +1,12 @@
+# Datasets (download from Kaggle, see README)
+*.csv
+
+# Saved models, created by aqi_main.py
+*.pkl
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
