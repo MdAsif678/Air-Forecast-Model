@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AeroCast 24 // Air Quality Forecast Terminal</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono (Strict Monospace) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'Consolas', 'monospace'],
+          },
+          colors: {
+            termBg: '#0c0d10',
+            termPanel: '#121418',
+            termBorder: '#23262d',
+            termBorderLight: '#323742',
+            // Strict solid EPA Colors - No gradients
+            epaGood: '#00E400',
+            epaSatisfactory: '#92D050',
+            epaModerate: '#FFFF00',
+            epaPoor: '#FF7E00',
+            epaVeryPoor: '#FF0000',
+            epaSevere: '#7E0023'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* STRICT NON-VIBE INDUSTRIAL FLAT DESIGN: NO GLOWS, NO BLURS, NO GRADIENTS */
+    * {
+      box-shadow: none !important;
+      text-shadow: none !important;
+      filter: none !important;
+    }
+
+    body {
+      background-color: #0c0d10;
+      color: #e2e8f0;
+      font-feature-settings: "tnum" 1;
+    }
+
+    html:not(.dark) body {
+      background-color: #ffffff;
+      color: #0f172a;
+    }
+
+    /* Flat panels & sharp borders */
+    .flat-panel {
+      background-color: #121418;
+      border: 1px solid #23262d;
+    }
+
+    html:not(.dark) .flat-panel {
+      background-color: #f8fafc;
+      border: 1px solid #cbd5e1;
+    }
+
+    .flat-panel-sub {
+      background-color: #16181f;
+      border: 1px solid #23262d;
+    }
+
+    html:not(.dark) .flat-panel-sub {
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
+    }
+
+    /* Clean flat buttons */
+    .btn-term {
+      padding: 6px 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      border: 1px solid #23262d;
+      background-color: #16181f;
+      color: #cbd5e1;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background-color 0.1s, border-color 0.1s, color 0.1s;
+    }
+
+    .btn-term:hover {
+      background-color: #23262d;
+      color: #ffffff;
+      border-color: #38bdf8;
+    }
+
+    .btn-term.active {
+      background-color: #0284c7;
+      color: #ffffff;
+      border-color: #38bdf8;
+    }
+
+    html:not(.dark) .btn-term {
+      background-color: #f1f5f9;
+      border-color: #cbd5e1;
+      color: #334155;
+    }
+
+    html:not(.dark) .btn-term:hover {
+      background-color: #e2e8f0;
+      color: #0f172a;
+      border-color: #0284c7;
+    }
+
+    html:not(.dark) .btn-term.active {
+      background-color: #0284c7;
+      color: #ffffff;
+      border-color: #0369a1;
+    }
+
+    /* Flat Sliders with clear tracks */
+    input[type=range] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: #23262d;
+      border-radius: 0px;
+      outline: none;
+      margin: 10px 0 6px 0;
+    }
+
+    html:not(.dark) input[type=range] {
+      background: #cbd5e1;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 20px;
+      background: #38bdf8;
+      border: 1px solid #0284c7;
+      border-radius: 0px;
+      cursor: pointer;
+    }
+
+    input[type=range]::-moz-range-thumb {
+      width: 14px;
+      height: 20px;
+      background: #38bdf8;
+      border: 1px solid #0284c7;
+      border-radius: 0px;
+      cursor: pointer;
+    }
+
+    /* Pinned table header */
+    .sticky-table-header th {
+      position: sticky;
+      top: 0;
+      background: #121418;
+      z-index: 20;
+      border-bottom: 2px solid #38bdf8;
+    }
+
+    html:not(.dark) .sticky-table-header th {
+      background: #f1f5f9;
+      border-bottom: 2px solid #0284c7;
+    }
+
+    /* Crosshair line */
+    .crosshair-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background-color: #f43f5e;
+      pointer-events: none;
+      z-index: 30;
+      display: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans text-xs antialiased">
+
+  <!-- ========================================================================= -->
+  <!-- 1. TOP NAVBAR (CLEAN, FUNCTIONAL & INTUITIVE)                             -->
+  <!-- ========================================================================= -->
+  <header class="sticky top-0 z-50 w-full bg-termBg border-b border-termBorder h-12 px-4 sm:px-6 flex items-center justify-between font-mono">
+    
+    <!-- Left: Brand & Status -->
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-2.5 h-2.5 bg-emerald-500"></span>
+        <span class="font-extrabold text-sm tracking-wider text-white">AEROCAST 24</span>
+      </div>
+      <span class="text-slate-600 hidden sm:inline">|</span>
+      <span class="text-slate-400 text-[11px] hidden sm:inline">AIR QUALITY 24H FORECAST TERMINAL</span>
+      <span class="text-slate-600 hidden md:inline">|</span>
+      <span class="text-[10px] px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold hidden md:inline">
+        MODEL: RANDOM FOREST (0.9140 F1)
+      </span>
+    </div>
+
+    <!-- Right: View Switcher & Actions -->
+    <div class="flex items-center gap-2">
+      <!-- Dashboard vs Raw CSV View Switcher -->
+      <div class="flex border border-termBorder">
+        <button id="btn-view-terminal" onclick="switchView('terminal')" class="px-3 py-1.5 bg-sky-600 text-white font-bold flex items-center gap-1.5 text-xs">
+          <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i> DASHBOARD
+        </button>
+        <button id="btn-view-table" onclick="switchView('table')" class="px-3 py-1.5 bg-termPanel text-slate-400 hover:text-white font-bold flex items-center gap-1.5 text-xs border-l border-termBorder">
+          <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> RAW CSV TABLE
+        </button>
+      </div>
+
+      <!-- Export CSV -->
+      <button onclick="downloadCSV()" class="btn-term" title="Download 24h Telemetry CSV">
+        <i data-lucide="download" class="w-3.5 h-3.5 text-sky-400"></i> EXPORT CSV
+      </button>
+
+      <!-- Theme Switch -->
+      <button onclick="toggleTheme()" class="btn-term" title="Toggle Dark/Light Mode">
+        <span id="theme-btn-text">DARK MODE</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- 2. SCENARIO PRESETS BAR (CLEAN, READABLE BUTTONS)                         -->
+  <!-- ========================================================================= -->
+  <div class="w-full bg-termPanel border-b border-termBorder px-4 sm:px-6 py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 font-mono text-[11px]">
+    <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+      <span class="text-slate-400 font-bold uppercase tracking-wider shrink-0 flex items-center gap-1">
+        <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i> QUICK SCENARIOS:
+      </span>
+      <div id="presets-button-group" class="flex items-center gap-1.5">
+        <!-- Injected via JavaScript with clean clickable buttons -->
+      </div>
+    </div>
+    <div class="text-[10px] text-slate-500 shrink-0 self-end sm:self-center">
+      TIME (UTC): <span id="live-utc-clock" class="text-slate-300 font-bold">--:--:-- UTC</span>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 3. MAIN WORKSPACE CONTAINER                                               -->
+  <!-- ========================================================================= -->
+  <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-4 space-y-4">
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 1: MAIN DASHBOARD                                                -->
+    <!-- ===================================================================== -->
+    <div id="view-terminal" class="space-y-4">
+      
+      <!-- TOP STATUS: CLEAR EXPLICIT WARNING BANNER -->
+      <div id="hero-warning-banner" class="p-3.5 border font-mono text-xs font-bold flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5">
+          <span id="banner-icon-box" class="px-2.5 py-1 bg-red-600 text-white font-black text-xs">[CRITICAL ALERT]</span>
+          <span id="banner-text" class="text-sm">CALCULATING 24-HOUR FORECAST TELEMETRY...</span>
+        </div>
+        <div class="text-[11px] text-slate-300 shrink-0 self-end sm:self-center">
+          RISK PROBABILITY: <span id="banner-confidence" class="font-black text-white text-sm">--%</span>
+        </div>
+      </div>
+
+      <!-- KEY RESULTS HERO SUMMARY (3 CLEAN BALANCED CARDS) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 font-mono">
+        
+        <!-- CARD 1: TOMORROW'S PREDICTED AQI -->
+        <div class="flat-panel p-4 flex flex-col justify-between">
+          <div class="flex justify-between items-start">
+            <span class="text-slate-400 font-bold text-xs uppercase">TOMORROW'S FORECAST AQI</span>
+            <span id="hero-category-tag" class="px-2.5 py-0.5 text-xs font-black uppercase text-black bg-yellow-400">
+              MODERATE
+            </span>
+          </div>
+          <div class="my-2 flex items-baseline gap-3">
+            <span id="hero-aqi-value" class="text-5xl font-black text-white tracking-tight">---</span>
+            <span class="text-slate-400 text-xs font-bold">AQI PTS</span>
+          </div>
+          <div class="border-t border-termBorder pt-2 flex justify-between text-[11px]">
+            <span class="text-slate-400">CHANGE FROM TODAY:</span>
+            <span id="hero-delta-value" class="font-bold">---</span>
+          </div>
+        </div>
+
+        <!-- CARD 2: PRIMARY POLLUTANT DRIVER -->
+        <div class="flat-panel p-4 flex flex-col justify-between">
+          <div class="flex justify-between items-start">
+            <span class="text-slate-400 font-bold text-xs uppercase">PRIMARY POLLUTANT DRIVER</span>
+            <span id="driver-status-tag" class="px-2 py-0.5 text-[10px] font-bold text-white bg-red-600 uppercase">
+              EXCEEDED
+            </span>
+          </div>
+          <div class="my-1">
+            <div class="text-2xl font-black text-white" id="driver-name-display">PM2.5 (FINE PARTICLES)</div>
+            <div class="text-xs text-slate-300 mt-1">
+              CURRENT: <strong class="text-white text-sm" id="driver-val-display">--.- µg/m³</strong>
+              <span class="text-slate-400">(SAFE CEILING: <span id="driver-limit-display">60.0</span>)</span>
+            </div>
+          </div>
+          <div class="border-t border-termBorder pt-2 flex justify-between text-[11px]">
+            <span class="text-slate-400">REGULATORY MULTIPLE:</span>
+            <span id="driver-multiple-display" class="font-bold text-white">---% OF STATUTORY LIMIT</span>
+          </div>
+        </div>
+
+        <!-- CARD 3: ML MODEL INTELLIGENCE VS BASELINE RULE -->
+        <div class="flat-panel p-4 flex flex-col justify-between">
+          <div class="flex justify-between items-start">
+            <span class="text-slate-400 font-bold text-xs uppercase">MACHINE LEARNING DECISION</span>
+            <span class="text-[10px] text-emerald-400 font-bold border border-emerald-500/40 px-1.5 py-0.5">CHAMPION MODEL</span>
+          </div>
+          <div class="space-y-1.5 my-1 text-xs">
+            <div class="flex justify-between">
+              <span class="text-slate-400">RANDOM FOREST ML:</span>
+              <span id="stat-ml-decision" class="font-bold text-white">---</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">PERSISTENCE HEURISTIC:</span>
+              <span id="stat-baseline-decision" class="font-bold text-white">---</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">MODEL RMSE ERROR:</span>
+              <span class="font-bold text-emerald-400">32.96 (-21.5% VS RULE)</span>
+            </div>
+          </div>
+          <div class="border-t border-termBorder pt-2 flex justify-between text-[11px] text-slate-400">
+            <span>UNHEALTHY THRESHOLD:</span>
+            <span class="text-amber-400 font-bold">AQI &gt; 100.0</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- MAIN 2-COLUMN WORKSPACE: SENSORS (LEFT) & PREDICTIVE TIMELINE (RIGHT) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start font-mono">
+        
+        <!-- LEFT COLUMN: CLEAR PARAMETER STUDIO (5 COLS) -->
+        <div class="lg:col-span-5 flat-panel p-4 space-y-4">
+          
+          <div class="flex items-center justify-between pb-2 border-b border-termBorder">
+            <div>
+              <span class="text-sky-400 font-bold text-xs uppercase flex items-center gap-1.5">
+                <i data-lucide="sliders" class="w-3.5 h-3.5"></i> SENSOR TELEMETRY CONTROLS
+              </span>
+              <span class="text-[10px] text-slate-500 block">Move sliders to calculate next-day forecast</span>
+            </div>
+            <button onclick="resetDefaults()" class="btn-term text-[10px] py-1 px-2">
+              <i data-lucide="rotate-ccw" class="w-3 h-3"></i> RESET
+            </button>
+          </div>
+
+          <!-- PRIMARY DRIVERS -->
+          <div class="space-y-3">
+            
+            <!-- PARAM 1: TODAY AQI -->
+            <div class="flat-panel-sub p-3">
+              <div class="flex justify-between items-center text-xs">
+                <span class="font-bold text-slate-200">TODAY'S CURRENT AQI</span>
+                <input type="number" id="in-aqi" min="5" max="500" value="138" class="w-16 px-1.5 py-0.5 text-right bg-termBg border border-termBorder text-white font-bold font-mono">
+              </div>
+              <input type="range" id="rng-aqi" min="5" max="500" value="138">
+              <div class="flex justify-between text-[10px] text-slate-500">
+                <span>0 (Good)</span>
+                <span class="text-amber-400 font-bold">100 (Unhealthy Threshold)</span>
+                <span>500 (Severe)</span>
+              </div>
+            </div>
+
+            <!-- PARAM 2: PREVIOUS AQI -->
+            <div class="flat-panel-sub p-3">
+              <div class="flex justify-between items-center text-xs">
+                <span class="font-bold text-slate-200">YESTERDAY'S AQI (LAG)</span>
+                <input type="number" id="in-prev-aqi" min="5" max="500" value="125" class="w-16 px-1.5 py-0.5 text-right bg-termBg border border-termBorder text-white font-bold font-mono">
+              </div>
+              <input type="range" id="rng-prev-aqi" min="5" max="500" value="125">
+              <div class="flex justify-between text-[10px] text-slate-500">
+                <span>0</span>
+                <span>Temporal Autoregressive Feature</span>
+                <span>500</span>
+              </div>
+            </div>
+
+            <!-- PARAM 3: PM2.5 -->
+            <div class="flat-panel-sub p-3">
+              <div class="flex justify-between items-center text-xs">
+                <div>
+                  <span class="font-bold text-slate-200">PM2.5 (FINE PARTICLES)</span>
+                  <span class="text-[10px] text-slate-400 block">NAAQS 24h Safe Limit: 60 µg/m³</span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <input type="number" id="in-pm25" step="0.5" min="1" max="450" value="65.0" class="w-16 px-1.5 py-0.5 text-right bg-termBg border border-termBorder text-white font-bold font-mono">
+                  <span class="text-[10px] text-slate-400">µg/m³</span>
+                </div>
+              </div>
+              <input type="range" id="rng-pm25" min="1" max="450" step="0.5" value="65.0">
+            </div>
+
+            <!-- PARAM 4: NO2 -->
+            <div class="flat-panel-sub p-3">
+              <div class="flex justify-between items-center text-xs">
+                <div>
+                  <span class="font-bold text-slate-200">NO2 (NITROGEN DIOXIDE)</span>
+                  <span class="text-[10px] text-slate-400 block">NAAQS 24h Safe Limit: 80 µg/m³</span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <input type="number" id="in-no2" step="0.5" min="1" max="250" value="42.0" class="w-16 px-1.5 py-0.5 text-right bg-termBg border border-termBorder text-white font-bold font-mono">
+                  <span class="text-[10px] text-slate-400">µg/m³</span>
+                </div>
+              </div>
+              <input type="range" id="rng-no2" min="1" max="250" step="0.5" value="42.0">
+            </div>
+
+            <!-- PARAM 5: CO -->
+            <div class="flat-panel-sub p-3">
+              <div class="flex justify-between items-center text-xs">
+                <div>
+                  <span class="font-bold text-slate-200">CO (CARBON MONOXIDE)</span>
+                  <span class="text-[10px] text-slate-400 block">NAAQS 8h Safe Limit: 2.0 mg/m³</span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <input type="number" id="in-co" step="0.05" min="0.05" max="15.0" value="1.30" class="w-16 px-1.5 py-0.5 text-right bg-termBg border border-termBorder text-white font-bold font-mono">
+                  <span class="text-[10px] text-slate-400">mg/m³</span>
+                </div>
+              </div>
+              <input type="range" id="rng-co" min="0.05" max="15.0" step="0.05" value="1.30">
+            </div>
+
+          </div>
+
+          <!-- SECONDARY POLLUTANTS ACCORDION -->
+          <div class="border-t border-termBorder pt-3">
+            <button onclick="toggleSecondaryAccordion()" class="w-full flex items-center justify-between text-xs font-bold text-slate-300 hover:text-white py-1">
+              <span class="flex items-center gap-1.5">
+                <i data-lucide="layers" class="w-3.5 h-3.5 text-sky-400"></i> ADVANCED SENSORS & SEASONALITY
+              </span>
+              <span id="accordion-indicator" class="text-slate-500 font-mono">[ + EXPAND ]</span>
+            </button>
+
+            <div id="secondary-panel" class="hidden mt-3 space-y-2.5">
+              
+              <div class="grid grid-cols-2 gap-2">
+                <div class="flat-panel-sub p-2">
+                  <label class="text-[10px] text-slate-400 block">PM10 (µg/m³)</label>
+                  <input type="number" id="in-pm10" value="115.0" class="w-full mt-1 px-1.5 py-0.5 bg-termBg border border-termBorder text-white text-xs">
+                </div>
+                <div class="flat-panel-sub p-2">
+                  <label class="text-[10px] text-slate-400 block">SO2 (µg/m³)</label>
+                  <input type="number" id="in-so2" value="14.5" class="w-full mt-1 px-1.5 py-0.5 bg-termBg border border-termBorder text-white text-xs">
+                </div>
+              </div>
+
+              <div class="flat-panel-sub p-2">
+                <div class="flex justify-between items-center mb-1">
+                  <label class="text-[10px] text-slate-400">CALENDAR MONTH (INVERSION FACTOR)</label>
+                  <span id="month-inversion-badge" class="text-[9px] px-1 bg-red-600 text-white font-bold">WINTER INVERSION</span>
+                </div>
+                <select id="in-month" onchange="onParameterScrub()" class="w-full px-2 py-1 bg-termBg border border-termBorder text-white text-xs">
+                  <option value="1">01 - JANUARY [WINTER INVERSION]</option>
+                  <option value="2">02 - FEBRUARY [WINTER INVERSION]</option>
+                  <option value="3">03 - MARCH [SPRING]</option>
+                  <option value="4">04 - APRIL [SUMMER]</option>
+                  <option value="5">05 - MAY [PRE-MONSOON]</option>
+                  <option value="6">06 - JUNE [MONSOON]</option>
+                  <option value="7">07 - JULY [MONSOON]</option>
+                  <option value="8">08 - AUGUST [MONSOON]</option>
+                  <option value="9">09 - SEPTEMBER [POST-MONSOON]</option>
+                  <option value="10">10 - OCTOBER [AUTUMN]</option>
+                  <option value="11" selected>11 - NOVEMBER [WINTER INVERSION]</option>
+                  <option value="12">12 - DECEMBER [WINTER INVERSION]</option>
+                </select>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: SYNCHRONIZED TIMELINE & PROTOCOLS (7 COLS) -->
+        <div class="lg:col-span-7 space-y-4">
+          
+          <!-- SYNCHRONIZED TIMELINE CHART -->
+          <div class="flat-panel p-4">
+            
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-2 mb-2 border-b border-termBorder gap-2">
+              <div>
+                <span class="text-sky-400 font-bold text-xs uppercase flex items-center gap-1.5">
+                  <i data-lucide="line-chart" class="w-3.5 h-3.5"></i> 24-HOUR STEP FORECAST TRAJECTORY
+                </span>
+                <span class="text-[10px] text-slate-500 block">Move mouse to inspect exact hourly values</span>
+              </div>
+              
+              <!-- Fixed Crosshair HUD Readout -->
+              <div id="crosshair-hud" class="text-[11px] bg-termBg px-2 py-1 border border-termBorder flex items-center gap-2.5">
+                <span>OFFSET: <strong id="hud-offset" class="text-white">+12h</strong></span>
+                <span>TIME: <strong id="hud-time" class="text-sky-400">--:00 UTC</strong></span>
+                <span>AQI: <strong id="hud-aqi" class="text-white">---</strong></span>
+                <span>PM2.5: <strong id="hud-pm25" class="text-amber-400">--.-</strong></span>
+              </div>
+            </div>
+
+            <!-- Canvas Container with Rigid Crosshair Line -->
+            <div id="charts-wrapper" class="relative select-none border border-termBorder bg-termBg p-2 space-y-2" onmousemove="onChartMouseMove(event)">
+              <div id="chart-crosshair" class="crosshair-line"></div>
+
+              <!-- TIMELINE 1: AQI -->
+              <div class="h-32 relative">
+                <div class="absolute top-1 left-2 text-[10px] font-bold text-slate-400 z-10 flex items-center gap-2">
+                  <span class="text-sky-400">[AXIS-A] 24H PREDICTED AQI STEP-CURVE</span>
+                  <span class="text-[9px] px-1 bg-red-600 text-white font-bold">100.0 UNHEALTHY LINE</span>
+                </div>
+                <canvas id="canvas-aqi" class="w-full h-full block"></canvas>
+              </div>
+
+              <!-- TIMELINE 2: PM2.5 -->
+              <div class="h-24 relative border-t border-termBorder pt-1">
+                <div class="absolute top-2 left-2 text-[10px] font-bold text-slate-400 z-10 flex items-center gap-2">
+                  <span class="text-amber-400">[AXIS-B] PM2.5 CONCENTRATION (µg/m³)</span>
+                  <span class="text-[9px] text-slate-400">NAAQS LIMIT: 60.0</span>
+                </div>
+                <canvas id="canvas-pm25" class="w-full h-full block"></canvas>
+              </div>
+
+              <!-- X-Axis Timeline Markers -->
+              <div id="timeline-x-labels" class="h-5 flex justify-between text-[9px] text-slate-500 px-1 pt-1 border-t border-termBorder">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ACTIONABLE STATUTORY ADVISORIES -->
+          <div class="flat-panel p-4">
+            <div class="flex items-center justify-between pb-2 mb-2 border-b border-termBorder font-mono">
+              <span class="text-sky-400 font-bold text-xs uppercase flex items-center gap-1.5">
+                <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i> PRE-EMPTIVE HEALTH & OPERATIONAL ADVISORIES
+              </span>
+              <span class="text-[10px] text-slate-500">24H ADVANCE NOTICE</span>
+            </div>
+
+            <div class="space-y-2">
+              <div class="flat-panel-sub p-2.5 flex items-start gap-2.5">
+                <span class="px-1.5 py-0.5 bg-blue-600 text-white font-bold text-[10px] shrink-0">SCHOOLS</span>
+                <p id="adv-schools" class="text-xs text-slate-200 leading-relaxed">Loading directive...</p>
+              </div>
+
+              <div class="flat-panel-sub p-2.5 flex items-start gap-2.5">
+                <span class="px-1.5 py-0.5 bg-amber-600 text-white font-bold text-[10px] shrink-0">CLINICAL</span>
+                <p id="adv-sensitive" class="text-xs text-slate-200 leading-relaxed">Loading directive...</p>
+              </div>
+
+              <div class="flat-panel-sub p-2.5 flex items-start gap-2.5">
+                <span class="px-1.5 py-0.5 bg-purple-600 text-white font-bold text-[10px] shrink-0">TRANSIT</span>
+                <p id="adv-commuters" class="text-xs text-slate-200 leading-relaxed">Loading directive...</p>
+              </div>
+
+              <div class="flat-panel-sub p-2.5 flex items-start gap-2.5">
+                <span class="px-1.5 py-0.5 bg-teal-600 text-white font-bold text-[10px] shrink-0">HVAC</span>
+                <p id="adv-indoor" class="text-xs text-slate-200 leading-relaxed">Loading directive...</p>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- COLLAPSIBLE SECTION: 7-MODEL BENCHMARK MATRIX (PLACED AT BOTTOM) -->
+      <div class="flat-panel p-4 font-mono">
+        <button onclick="toggleBenchmarks()" class="w-full flex items-center justify-between text-xs font-bold text-slate-300 hover:text-white py-1">
+          <span class="flex items-center gap-1.5">
+            <i data-lucide="award" class="w-3.5 h-3.5 text-emerald-400"></i> MODEL BENCHMARKS (7 ARCHITECTURES EVALUATED ON 4,408 DAYS)
+          </span>
+          <span id="benchmarks-toggle-indicator" class="text-slate-500">[ + EXPAND BENCHMARKS ]</span>
+        </button>
+
+        <div id="benchmarks-panel" class="hidden mt-3 pt-3 border-t border-termBorder">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-[11px]">
+              <thead class="bg-termBg text-slate-400 border-b border-termBorder">
+                <tr>
+                  <th class="p-2">MODEL ARCHITECTURE</th>
+                  <th class="p-2">FAMILY</th>
+                  <th class="p-2">ACCURACY</th>
+                  <th class="p-2">F1 SCORE</th>
+                  <th class="p-2">ROC-AUC</th>
+                  <th class="p-2">VERDICT</th>
+                </tr>
+              </thead>
+              <tbody id="benchmark-tbody" class="divide-y divide-termBorder">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 2: RAW CSV DATA TABLE VIEW (PINNED HEADERS & EXPORT)             -->
+    <!-- ===================================================================== -->
+    <div id="view-table" class="hidden space-y-3 font-mono">
+      
+      <div class="flat-panel p-3 flex items-center justify-between">
+        <div>
+          <span class="font-bold text-white text-xs">RAW TELEMETRY TIME-SERIES REPOSITORY</span>
+          <span class="text-slate-400 text-[11px] block">PINNED HEADERS // DISCRETE NUMERICAL TABULAR RECORDS</span>
+        </div>
+        <button onclick="downloadCSV()" class="btn-term active">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i> DOWNLOAD RAW CSV
+        </button>
+      </div>
+
+      <!-- Scrollable table container with sticky pinned headers -->
+      <div class="flat-panel overflow-y-auto max-h-[75vh] border border-termBorder">
+        <table class="w-full text-left text-[11px] border-collapse">
+          <thead class="sticky-table-header text-slate-300 uppercase tracking-wider text-[10px]">
+            <tr>
+              <th class="p-2.5">INDEX</th>
+              <th class="p-2.5">OFFSET</th>
+              <th class="p-2.5">TIMESTAMP (UTC)</th>
+              <th class="p-2.5 text-right">AQI</th>
+              <th class="p-2.5 text-right">PM2.5 [µg/m³]</th>
+              <th class="p-2.5 text-right">NO2 [µg/m³]</th>
+              <th class="p-2.5 text-right">CO [mg/m³]</th>
+              <th class="p-2.5 text-center">ALERT STATUS</th>
+            </tr>
+          </thead>
+          <tbody id="raw-table-tbody" class="divide-y divide-termBorder text-slate-200">
+            <!-- Injected by JS -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- JAVASCRIPT LOGIC ENGINE                                                   -->
+  <!-- ========================================================================= -->
+  <script>
+    let currentData = null;
+    let presets = [];
+    let debounceTimer = null;
+    let selectedStepIndex = 12;
+    let activePresetId = "traffic_moderate";
+
+    const paramIds = ["aqi", "prev-aqi", "pm25", "no2", "co"];
+
+    function initInputs() {
+      paramIds.forEach(id => {
+        const num = document.getElementById(`in-${id}`);
+        const rng = document.getElementById(`rng-${id}`);
+        if (!num || !rng) return;
+
+        rng.addEventListener("input", (e) => {
+          num.value = e.target.value;
+          onParameterScrub();
+        });
+
+        num.addEventListener("input", (e) => {
+          rng.value = e.target.value;
+          onParameterScrub();
+        });
+      });
+
+      const pm10 = document.getElementById("in-pm10");
+      const so2 = document.getElementById("in-so2");
+      if (pm10) pm10.addEventListener("input", onParameterScrub);
+      if (so2) so2.addEventListener("input", onParameterScrub);
+    }
+
+    function onParameterScrub() {
+      // Inversion check
+      const m = parseInt(document.getElementById("in-month").value) || 11;
+      const invBadge = document.getElementById("month-inversion-badge");
+      if (invBadge) {
+        if ([11, 12, 1, 2].includes(m)) {
+          invBadge.className = "text-[9px] px-1 bg-red-600 text-white font-bold";
+          invBadge.textContent = "WINTER INVERSION";
+        } else {
+          invBadge.className = "text-[9px] px-1 bg-slate-700 text-slate-300 font-bold";
+          invBadge.textContent = "NORMAL DISPERSION";
+        }
+      }
+
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        fetchTelemetry();
+      }, 70);
+    }
+
+    function getPayload() {
+      return {
+        aqi: parseFloat(document.getElementById("in-aqi").value),
+        prev_aqi: parseFloat(document.getElementById("in-prev-aqi").value),
+        pm25: parseFloat(document.getElementById("in-pm25").value),
+        no2: parseFloat(document.getElementById("in-no2").value),
+        co: parseFloat(document.getElementById("in-co").value),
+        pm10: parseFloat(document.getElementById("in-pm10").value) || 104.2,
+        so2: parseFloat(document.getElementById("in-so2").value) || 11.2,
+        month: parseInt(document.getElementById("in-month").value) || 11,
+        day_of_week: 3
+      };
+    }
+
+    async function fetchTelemetry() {
+      const payload = getPayload();
+      try {
+        const resp = await fetch("/api/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        currentData = await resp.json();
+        renderTerminalTelemetry(currentData);
+      } catch (err) {
+        console.error("Telemetry error:", err);
+      }
+    }
+
+    function renderTerminalTelemetry(data) {
+      const pred = data.predicted_aqi;
+      const isUnhealthy = data.is_unhealthy;
+      const epa = data.epa_colors;
+
+      // 1. Warning Banner
+      const banner = document.getElementById("hero-warning-banner");
+      const iconBox = document.getElementById("banner-icon-box");
+      const bannerText = document.getElementById("banner-text");
+      const bannerConf = document.getElementById("banner-confidence");
+      
+      bannerText.textContent = data.warning_banner;
+      bannerConf.textContent = `${data.confidence_pct}%`;
+      
+      if (isUnhealthy) {
+        banner.className = "p-3.5 border font-mono text-xs font-bold flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-red-950 border-red-600 text-white";
+        iconBox.className = "px-2.5 py-1 bg-red-600 text-white font-black text-xs";
+        iconBox.textContent = "[CRITICAL WARNING]";
+      } else {
+        banner.className = "p-3.5 border font-mono text-xs font-bold flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-emerald-950 border-emerald-600 text-white";
+        iconBox.className = "px-2.5 py-1 bg-emerald-500 text-black font-black text-xs";
+        iconBox.textContent = "[NOMINAL / SAFE]";
+      }
+
+      // 2. Hero Forecast AQI
+      document.getElementById("hero-aqi-value").textContent = Math.round(pred);
+      const catTag = document.getElementById("hero-category-tag");
+      catTag.textContent = data.category.toUpperCase();
+      catTag.style.backgroundColor = epa.bg;
+      catTag.style.color = epa.text;
+
+      // Delta
+      const deltaElem = document.getElementById("hero-delta-value");
+      if (data.delta > 0) {
+        deltaElem.innerHTML = `<span class="text-red-400 font-bold">+${data.delta} AQI PTS (DETERIORATING)</span>`;
+      } else if (data.delta < 0) {
+        deltaElem.innerHTML = `<span class="text-emerald-400 font-bold">${data.delta} AQI PTS (IMPROVING)</span>`;
+      } else {
+        deltaElem.innerHTML = `<span class="text-slate-400 font-bold">0.0 PTS (STABLE)</span>`;
+      }
+
+      // 3. Primary Driver
+      const drv = data.primary_driver;
+      document.getElementById("driver-name-display").textContent = `${drv.pollutant} (${drv.unit})`;
+      document.getElementById("driver-val-display").textContent = `${drv.value} ${drv.unit}`;
+      document.getElementById("driver-limit-display").textContent = `${drv.limit} ${drv.unit}`;
+      document.getElementById("driver-multiple-display").textContent = `${drv.pct_of_limit}% OF STATUTORY LIMIT`;
+      
+      const drvTag = document.getElementById("driver-status-tag");
+      if (drv.exceeded) {
+        drvTag.className = "px-2 py-0.5 text-[10px] font-bold text-white bg-red-600 uppercase";
+        drvTag.textContent = "CEILING EXCEEDED";
+      } else {
+        drvTag.className = "px-2 py-0.5 text-[10px] font-bold text-black bg-emerald-500 uppercase";
+        drvTag.textContent = "WITHIN BOUNDS";
+      }
+
+      // 4. ML Consensus
+      document.getElementById("stat-ml-decision").textContent = data.champion_says;
+      document.getElementById("stat-ml-decision").className = isUnhealthy ? "font-bold text-red-400" : "font-bold text-emerald-400";
+      
+      document.getElementById("stat-baseline-decision").textContent = data.baseline_says;
+      document.getElementById("stat-baseline-decision").className = data.baseline_says === "UNHEALTHY" ? "font-bold text-red-400" : "font-bold text-emerald-400";
+
+      // 5. Advisories
+      if (data.operational_protocols && data.operational_protocols.length >= 4) {
+        document.getElementById("adv-schools").textContent = data.operational_protocols[0].instruction;
+        document.getElementById("adv-sensitive").textContent = data.operational_protocols[1].instruction;
+        document.getElementById("adv-commuters").textContent = data.operational_protocols[2].instruction;
+        document.getElementById("adv-indoor").textContent = data.operational_protocols[3].instruction;
+      }
+
+      // 6. Draw Step Charts
+      drawStepCharts(data.timeline);
+
+      // 7. Render Raw Table
+      renderRawTable(data.timeline);
+    }
+
+    // DRAW STEP CHARTS
+    function drawStepCharts(timeline) {
+      if (!timeline || timeline.length === 0) return;
+      drawSingleStepCanvas("canvas-aqi", timeline, "aqi", 0, 500, "#38bdf8", 100, "#ef4444");
+      drawSingleStepCanvas("canvas-pm25", timeline, "pm25", 0, 350, "#f59e0b", 60, "#ef4444");
+
+      const xCont = document.getElementById("timeline-x-labels");
+      if (xCont) {
+        xCont.innerHTML = `
+          <span>${timeline[0].display_time} [T+0h]</span>
+          <span>${timeline[6].display_time} [+06h]</span>
+          <span>${timeline[12].display_time} [+12h]</span>
+          <span>${timeline[18].display_time} [+18h]</span>
+          <span>${timeline[24].display_time} [+24h]</span>
+        `;
+      }
+      updateCrosshairHUD(selectedStepIndex);
+    }
+
+    function drawSingleStepCanvas(canvasId, timeline, key, minVal, maxVal, lineColor, threshold, threshColor) {
+      const cvs = document.getElementById(canvasId);
+      if (!cvs) return;
+      const ctx = cvs.getContext("2d");
+      const dpr = window.devicePixelRatio || 1;
+      
+      const rect = cvs.getBoundingClientRect();
+      cvs.width = rect.width * dpr;
+      cvs.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
+      const w = rect.width;
+      const h = rect.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Grid lines
+      ctx.strokeStyle = "#1e222b";
+      ctx.lineWidth = 1;
+      for (let yPct = 0.25; yPct < 1.0; yPct += 0.25) {
+        ctx.beginPath();
+        ctx.moveTo(0, h * yPct);
+        ctx.lineTo(w, h * yPct);
+        ctx.stroke();
+      }
+
+      // Threshold line
+      if (threshold !== undefined) {
+        const threshY = h - ((threshold - minVal) / (maxVal - minVal)) * h;
+        ctx.strokeStyle = threshColor;
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(0, threshY);
+        ctx.lineTo(w, threshY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      // Step-line
+      ctx.strokeStyle = lineColor;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+
+      const n = timeline.length;
+      for (let i = 0; i < n; i++) {
+        const val = timeline[i][key];
+        const x = (i / (n - 1)) * w;
+        const y = h - ((val - minVal) / (maxVal - minVal)) * h;
+
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          const prevVal = timeline[i - 1][key];
+          const prevY = h - ((prevVal - minVal) / (maxVal - minVal)) * h;
+          ctx.lineTo(x, prevY);
+          ctx.lineTo(x, y);
+        }
+      }
+      ctx.stroke();
+    }
+
+    // CROSSHAIR INTERACTION
+    function onChartMouseMove(e) {
+      if (!currentData || !currentData.timeline) return;
+      const wrapper = document.getElementById("charts-wrapper");
+      const rect = wrapper.getBoundingClientRect();
+      const mouseX = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+
+      const n = currentData.timeline.length;
+      const stepIndex = Math.min(n - 1, Math.max(0, Math.round((mouseX / rect.width) * (n - 1))));
+      selectedStepIndex = stepIndex;
+
+      const snapX = (stepIndex / (n - 1)) * rect.width;
+      const ch = document.getElementById("chart-crosshair");
+      if (ch) {
+        ch.style.display = "block";
+        ch.style.left = `${snapX}px`;
+      }
+      updateCrosshairHUD(stepIndex);
+    }
+
+    function updateCrosshairHUD(index) {
+      if (!currentData || !currentData.timeline) return;
+      const pt = currentData.timeline[index];
+      if (!pt) return;
+
+      document.getElementById("hud-offset").textContent = pt.hour_offset;
+      document.getElementById("hud-time").textContent = pt.display_time;
+      document.getElementById("hud-aqi").textContent = Math.round(pt.aqi);
+      document.getElementById("hud-pm25").textContent = pt.pm25.toFixed(1);
+    }
+
+    // RENDER RAW TABLE
+    function renderRawTable(timeline) {
+      const tbody = document.getElementById("raw-table-tbody");
+      if (!tbody || !timeline) return;
+
+      tbody.innerHTML = timeline.map(row => `
+        <tr class="hover:bg-slate-800/40">
+          <td class="p-2 text-slate-400">${row.step_index}</td>
+          <td class="p-2 font-bold text-sky-400">${row.hour_offset}</td>
+          <td class="p-2 text-slate-300">${row.iso_timestamp}</td>
+          <td class="p-2 font-black text-right ${row.is_unhealthy ? 'text-red-400' : 'text-emerald-400'}">${row.aqi.toFixed(1)}</td>
+          <td class="p-2 text-right text-white">${row.pm25.toFixed(1)}</td>
+          <td class="p-2 text-right text-white">${row.no2.toFixed(1)}</td>
+          <td class="p-2 text-right text-white">${row.co.toFixed(2)}</td>
+          <td class="p-2 text-center">
+            <span class="px-1.5 py-0.5 text-[9px] font-bold ${row.is_unhealthy ? 'bg-red-600 text-white' : 'bg-emerald-500 text-black'}">
+              ${row.flag}
+            </span>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    function switchView(viewName) {
+      const termView = document.getElementById("view-terminal");
+      const tblView = document.getElementById("view-table");
+      const btnTerm = document.getElementById("btn-view-terminal");
+      const btnTbl = document.getElementById("btn-view-table");
+
+      if (viewName === "terminal") {
+        termView.classList.remove("hidden");
+        tblView.classList.add("hidden");
+        btnTerm.className = "px-3 py-1.5 bg-sky-600 text-white font-bold flex items-center gap-1.5 text-xs";
+        btnTbl.className = "px-3 py-1.5 bg-termPanel text-slate-400 hover:text-white font-bold flex items-center gap-1.5 text-xs border-l border-termBorder";
+        if (currentData) drawStepCharts(currentData.timeline);
+      } else {
+        termView.classList.add("hidden");
+        tblView.classList.remove("hidden");
+        btnTbl.className = "px-3 py-1.5 bg-sky-600 text-white font-bold flex items-center gap-1.5 text-xs border-l border-termBorder";
+        btnTerm.className = "px-3 py-1.5 bg-termPanel text-slate-400 hover:text-white font-bold flex items-center gap-1.5 text-xs";
+      }
+    }
+
+    async function downloadCSV() {
+      const payload = getPayload();
+      try {
+        const resp = await fetch("/api/export-csv", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const blob = await resp.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `aerocast_telemetry_${Date.now()}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      } catch (e) {
+        console.error("Export error:", e);
+      }
+    }
+
+    function toggleSecondaryAccordion() {
+      const p = document.getElementById("secondary-panel");
+      const ind = document.getElementById("accordion-indicator");
+      if (p.classList.contains("hidden")) {
+        p.classList.remove("hidden");
+        ind.textContent = "[ - COLLAPSE ]";
+      } else {
+        p.classList.add("hidden");
+        ind.textContent = "[ + EXPAND ]";
+      }
+    }
+
+    function toggleBenchmarks() {
+      const p = document.getElementById("benchmarks-panel");
+      const ind = document.getElementById("benchmarks-toggle-indicator");
+      if (p.classList.contains("hidden")) {
+        p.classList.remove("hidden");
+        ind.textContent = "[ - COLLAPSE BENCHMARKS ]";
+      } else {
+        p.classList.add("hidden");
+        ind.textContent = "[ + EXPAND BENCHMARKS ]";
+      }
+    }
+
+    function applyTerminalPreset(p, idx) {
+      activePresetId = p.id;
+      
+      // Update active button state
+      const btns = document.querySelectorAll(".preset-btn");
+      btns.forEach((b, i) => {
+        if (i === idx) {
+          b.classList.add("active");
+        } else {
+          b.classList.remove("active");
+        }
+      });
+
+      document.getElementById("in-aqi").value = p.data.aqi;
+      document.getElementById("rng-aqi").value = p.data.aqi;
+      
+      document.getElementById("in-prev-aqi").value = p.data.prev_aqi;
+      document.getElementById("rng-prev-aqi").value = p.data.prev_aqi;
+
+      document.getElementById("in-pm25").value = p.data.pm25;
+      document.getElementById("rng-pm25").value = p.data.pm25;
+
+      document.getElementById("in-no2").value = p.data.no2;
+      document.getElementById("rng-no2").value = p.data.no2;
+
+      document.getElementById("in-co").value = p.data.co;
+      document.getElementById("rng-co").value = p.data.co;
+
+      document.getElementById("in-pm10").value = p.data.pm10;
+      document.getElementById("in-so2").value = p.data.so2;
+      document.getElementById("in-month").value = p.data.month;
+
+      onParameterScrub();
+    }
+
+    function resetDefaults() {
+      if (presets.length > 2) applyTerminalPreset(presets[2], 2);
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const btn = document.getElementById("theme-btn-text");
+      if (html.classList.contains("dark")) {
+        html.classList.remove("dark");
+        btn.textContent = "LIGHT MODE";
+      } else {
+        html.classList.add("dark");
+        btn.textContent = "DARK MODE";
+      }
+      if (currentData) drawStepCharts(currentData.timeline);
+    }
+
+    // Live clock
+    setInterval(() => {
+      const now = new Date();
+      document.getElementById("live-utc-clock").textContent = now.toUTCString().replace("GMT", "UTC");
+    }, 1000);
+
+    // Initializer
+    window.addEventListener("DOMContentLoaded", async () => {
+      initInputs();
+
+      // Load Presets as clean buttons
+      try {
+        const presResp = await fetch("/api/presets");
+        presets = await presResp.json();
+        const cont = document.getElementById("presets-button-group");
+        if (cont) {
+          cont.innerHTML = presets.map((p, idx) => `
+            <button onclick='applyTerminalPreset(presets[${idx}], ${idx})' class="btn-term preset-btn ${p.id === activePresetId ? 'active' : ''}">
+              <span class="inline-block w-1.5 h-1.5 ${p.id === 'clean_baseline' ? 'bg-emerald-400' : (p.id === 'inversion_severe' ? 'bg-red-500' : 'bg-amber-400')}"></span>
+              ${p.label}
+            </button>
+          `).join("");
+        }
+      } catch (e) {
+        console.error(e);
+      }
+
+      // Load Benchmarks table
+      try {
+        const benchResp = await fetch("/api/benchmarks");
+        const benchmarks = await benchResp.json();
+        const tbody = document.getElementById("benchmark-tbody");
+        if (tbody) {
+          tbody.innerHTML = benchmarks.models.map(m => `
+            <tr class="${m.rank === 'CHAMPION' ? 'bg-emerald-950/60 font-bold text-emerald-300' : 'hover:bg-slate-800/40'}">
+              <td class="p-2 font-bold">${m.name}</td>
+              <td class="p-2 text-slate-400">${m.family}</td>
+              <td class="p-2 font-mono">${m.acc}</td>
+              <td class="p-2 font-mono font-bold">${m.f1}</td>
+              <td class="p-2 font-mono">${m.auc}</td>
+              <td class="p-2">
+                <span class="px-1.5 py-0.2 text-[9px] font-bold ${m.rank === 'CHAMPION' ? 'bg-emerald-500 text-black' : 'bg-slate-800 text-slate-400'}">
+                  ${m.rank}
+                </span>
+              </td>
+            </tr>
+          `).join("");
+        }
+      } catch (e) {
+        console.error(e);
+      }
+
+      fetchTelemetry();
+      lucide.createIcons();
+    });
+
+    window.addEventListener("resize", () => {
+      if (currentData) drawStepCharts(currentData.timeline);
+    });
+  </script>
+</body>
+</html>

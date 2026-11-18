@@ -40,8 +40,26 @@ Download it and put `city_day.csv` and `station_day.csv` in the project folder.
 
 ## How to run
 
+### 1. Launch the High-Density Telemetry Web Dashboard (Recommended)
+
+Run the fast API server:
 ```bash
 pip install -r requirements.txt
+python server.py
+```
+Or double-click `run_app.bat` on Windows. Then open **http://127.0.0.1:7860** in your browser.
+
+**Web Terminal Features:**
+- ⚡ **High-Density Utilitarian Terminal:** Clinical flat design with exact EPA/CPCB color coding, tabular JetBrains Mono numerals, and zero-distraction layout.
+- 🔮 **24h Early Warning & Trajectory:** Real-time multi-pollutant sliders (PM2.5, NO2, CO, PM10, SO2, O3) with instant 24h step-curve simulation.
+- 🎯 **Primary Pollutant Driver:** Identifies the key particulate or chemical driver exceeding NAAQS 24h statutory standards.
+- 📈 **Synchronized Axis Scrubbing:** Interactive vertical crosshair locked across timeline axes for exact hourly point inspection.
+- 📋 **Statutory Action Directives:** Clear pre-emptive guidelines for schools, sensitive cardiopulmonary groups, commuters, and HVAC management.
+- 💾 **Raw CSV Telemetry & Export:** Instant toggle between visual terminal and pinned-header CSV tabular view with one-click export.
+
+### 2. Run the Full Model Pipeline (CLI)
+
+```bash
 python aqi_main.py            # EDA, training, comparison, tuning, graphs, ablation; saves the models (.pkl)
 python validation_station.py  # tests the saved models on station_day.csv
 ```
