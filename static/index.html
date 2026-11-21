@@ -24,7 +24,7 @@
           colors: {
             appDarkBg: '#090a0f',
             appDarkCard: '#11131a',
-            appDarkCardSub: '#181b24',
+            appDarkCardSub: '#161922',
             appDarkBorder: '#232733',
             appDarkBorderSub: '#2e3342'
           }
@@ -37,7 +37,6 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
-    /* Clean, natural base styles */
     body {
       font-feature-settings: "cv02", "cv03", "cv04", "cv11";
       -webkit-font-smoothing: antialiased;
@@ -48,16 +47,16 @@
       font-feature-settings: "tnum" 1;
     }
 
-    /* Custom range slider styling (Clean, functional, non-vibecoded) */
+    /* Clean modern slider */
     input[type=range] {
       -webkit-appearance: none;
       appearance: none;
       width: 100%;
-      height: 6px;
+      height: 5px;
       background: #e2e8f0;
       border-radius: 9999px;
       outline: none;
-      margin: 8px 0;
+      margin: 6px 0;
       cursor: pointer;
     }
 
@@ -68,8 +67,8 @@
     input[type=range]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
       background: #ffffff;
       border: 2px solid #0284c7;
@@ -84,8 +83,8 @@
     }
 
     input[type=range]::-moz-range-thumb {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
       background: #ffffff;
       border: 2px solid #0284c7;
@@ -93,7 +92,6 @@
       cursor: pointer;
     }
 
-    /* Pinned table headers */
     .sticky-th {
       position: sticky;
       top: 0;
@@ -105,7 +103,6 @@
       background: #11131a;
     }
 
-    /* Custom scrollbar for clean UI */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -126,104 +123,77 @@
 <body class="min-h-screen bg-slate-50 text-slate-800 dark:bg-appDarkBg dark:text-slate-100 flex flex-col font-sans text-sm selection:bg-sky-500 selection:text-white transition-colors duration-150">
 
   <!-- ========================================================================= -->
-  <!-- 1. TOP NAVIGATION BAR                                                     -->
+  <!-- 1. CLEAN SIMPLE HEADER                                                    -->
   <!-- ========================================================================= -->
   <header class="sticky top-0 z-40 w-full bg-white/95 dark:bg-appDarkCard/95 border-b border-slate-200 dark:border-appDarkBorder backdrop-blur-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
       
       <!-- Brand & Description -->
       <div class="flex items-center gap-3">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-lg bg-sky-600 text-white flex items-center justify-center font-bold shadow-sm">
-            <i data-lucide="wind" class="w-4 h-4"></i>
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-bold text-base tracking-tight text-slate-900 dark:text-white">AeroCast</span>
-              <span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium">24h Forecast</span>
-            </div>
-            <span class="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:inline">Air Quality Early Warning System</span>
-          </div>
+        <div class="w-8 h-8 rounded-lg bg-sky-600 text-white flex items-center justify-center font-bold shadow-sm">
+          <i data-lucide="wind" class="w-4 h-4"></i>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span class="font-bold text-base tracking-tight text-slate-900 dark:text-white">AeroCast</span>
+          <span class="text-xs text-slate-500 dark:text-slate-400 hidden sm:inline">• 24-Hour Air Quality Forecast</span>
         </div>
       </div>
 
-      <!-- Center / Right Actions -->
-      <div class="flex items-center gap-2 sm:gap-3">
-        
-        <!-- View Tabs -->
+      <!-- Right Controls -->
+      <div class="flex items-center gap-2">
+        <!-- View Toggle -->
         <div class="flex p-0.5 rounded-lg bg-slate-100 dark:bg-appDarkCardSub border border-slate-200 dark:border-appDarkBorder">
           <button id="tab-btn-dashboard" onclick="switchView('dashboard')" class="px-3 py-1.5 rounded-md text-xs font-semibold bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm flex items-center gap-1.5 transition-all">
             <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-sky-500"></i>
-            <span>Dashboard</span>
+            <span>Forecast</span>
           </button>
           <button id="tab-btn-table" onclick="switchView('table')" class="px-3 py-1.5 rounded-md text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-1.5 transition-all">
             <i data-lucide="table" class="w-3.5 h-3.5"></i>
-            <span>Hourly Data</span>
+            <span>Hourly Table</span>
           </button>
         </div>
 
         <!-- Export CSV Button -->
         <button onclick="downloadCSV()" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-appDarkCardSub border border-slate-200 dark:border-appDarkBorder text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 shadow-sm flex items-center gap-1.5 transition-all" title="Export 24h predictions to CSV">
           <i data-lucide="download" class="w-3.5 h-3.5 text-slate-500"></i>
-          <span class="hidden md:inline">Export CSV</span>
+          <span class="hidden md:inline">Export</span>
         </button>
 
         <!-- Theme Toggle -->
         <button onclick="toggleTheme()" class="p-2 rounded-lg bg-white dark:bg-appDarkCardSub border border-slate-200 dark:border-appDarkBorder text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 shadow-sm transition-all" title="Toggle Light/Dark Mode">
           <i id="theme-icon" data-lucide="sun" class="w-4 h-4"></i>
         </button>
-
       </div>
+
     </div>
   </header>
 
   <!-- ========================================================================= -->
-  <!-- 2. CITY / SCENARIO QUICK PRESETS BAR                                      -->
+  <!-- 2. MAIN WORKSPACE CONTAINER                                               -->
   <!-- ========================================================================= -->
-  <section class="border-b border-slate-200 dark:border-appDarkBorder bg-white/70 dark:bg-appDarkCard/70 px-4 sm:px-6 py-2.5">
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-2.5">
+  <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-5 space-y-4">
+
+    <!-- VIEW 1: SIMPLE FORECAST VIEW -->
+    <div id="view-dashboard" class="space-y-4">
       
-      <!-- Preset Buttons -->
-      <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
-        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 shrink-0 flex items-center gap-1.5 mr-1">
-          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-sky-500"></i> Location Profiles:
-        </span>
-        <div id="presets-container" class="flex items-center gap-1.5">
-          <!-- Populated dynamically via JS -->
-        </div>
+      <!-- RANDOM FOREST MODEL ROW (WITH GREEN DOT) -->
+      <div class="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <span class="font-medium text-slate-800 dark:text-slate-300">Random Forest Model</span>
       </div>
 
-      <!-- Current Status & Timestamp -->
-      <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 self-end md:self-center shrink-0">
-        <span class="flex items-center gap-1.5">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span class="font-medium">Model Active: Random Forest (89.6% Acc)</span>
-        </span>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ========================================================================= -->
-  <!-- 3. MAIN DASHBOARD CONTENT                                                 -->
-  <!-- ========================================================================= -->
-  <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-5 space-y-5">
-
-    <!-- VIEW 1: DASHBOARD VIEW -->
-    <div id="view-dashboard" class="space-y-5">
-      
-      <!-- HERO BANNER: 24H FORECAST SUMMARY -->
-      <div id="forecast-hero-card" class="rounded-xl border p-5 transition-all shadow-sm bg-white dark:bg-appDarkCard border-slate-200 dark:border-appDarkBorder">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+      <!-- STREAMLINED FORECAST HERO CARD -->
+      <div id="forecast-hero-card" class="rounded-xl border p-5 shadow-sm bg-white dark:bg-appDarkCard border-slate-200 dark:border-appDarkBorder">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
           
-          <!-- Tomorrow's Main AQI Score -->
-          <div class="lg:col-span-5 flex items-center gap-5 border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-appDarkBorder pb-4 lg:pb-0 lg:pr-5">
-            <div id="aqi-display-badge" class="w-24 h-24 rounded-2xl flex flex-col items-center justify-center shrink-0 text-white font-bold shadow-sm transition-all" style="background-color: #f59e0b;">
-              <span class="text-[10px] uppercase font-semibold tracking-wider opacity-90">Tomorrow</span>
-              <span id="val-predicted-aqi" class="text-4xl font-extrabold tracking-tight num-font">--</span>
-              <span class="text-[10px] font-medium opacity-90">AQI PTS</span>
+          <!-- Left: Tomorrow's AQI Badge & Headline -->
+          <div class="flex items-center gap-4">
+            <div id="aqi-display-badge" class="w-20 h-20 rounded-xl flex flex-col items-center justify-center shrink-0 text-white font-bold shadow-sm transition-all" style="background-color: #f59e0b;">
+              <span class="text-[10px] uppercase font-semibold opacity-90">Tomorrow</span>
+              <span id="val-predicted-aqi" class="text-3xl font-extrabold tracking-tight num-font">--</span>
+              <span class="text-[9px] font-medium opacity-90">AQI</span>
             </div>
-            
+
             <div class="space-y-1">
               <div class="flex items-center gap-2">
                 <span id="badge-category-name" class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200">
@@ -242,153 +212,104 @@
             </div>
           </div>
 
-          <!-- Primary Cause & Model Confidence -->
-          <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            
-            <!-- Primary Pollutant Driver -->
-            <div class="p-3.5 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/80 dark:border-appDarkBorder">
-              <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-1">
-                <span class="font-medium flex items-center gap-1.5">
-                  <i data-lucide="alert-circle" class="w-3.5 h-3.5 text-amber-500"></i> Main Pollutant Driver
-                </span>
-                <span id="driver-status-badge" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300">
-                  Exceeded
-                </span>
-              </div>
-              <div class="text-base font-bold text-slate-900 dark:text-white" id="val-driver-name">
-                PM2.5 (Fine Dust)
-              </div>
-              <div class="text-xs text-slate-600 dark:text-slate-300 mt-0.5 flex items-baseline justify-between">
-                <span>Current: <strong id="val-driver-val" class="num-font text-slate-900 dark:text-white">65.0 µg/m³</strong></span>
-                <span class="text-[11px] text-slate-400">Safe: <span id="val-driver-safe">60.0 µg/m³</span></span>
-              </div>
+          <!-- Right: Main Pollutant Box -->
+          <div class="px-3.5 py-2.5 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/80 dark:border-appDarkBorder min-w-[200px]">
+            <div class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center justify-between gap-2">
+              <span class="font-medium">Main Pollutant</span>
+              <span id="driver-status-badge" class="text-[10px] font-bold text-amber-600 dark:text-amber-400">Exceeded</span>
             </div>
-
-            <!-- Model Verification & Confidence -->
-            <div class="p-3.5 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/80 dark:border-appDarkBorder">
-              <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-1">
-                <span class="font-medium flex items-center gap-1.5">
-                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-500"></i> ML Confidence
-                </span>
-                <span class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">Random Forest</span>
-              </div>
-              <div class="text-base font-bold text-slate-900 dark:text-white flex items-baseline gap-1.5">
-                <span id="val-confidence-pct" class="num-font">89.6%</span>
-                <span class="text-xs font-normal text-slate-500 dark:text-slate-400">probability score</span>
-              </div>
-              <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                RMSE error: <strong class="text-slate-700 dark:text-slate-200 num-font">32.96</strong> (21.5% better than today's rule)
-              </div>
+            <div class="text-xs font-bold text-slate-900 dark:text-white mt-1" id="val-driver-name">
+              PM2.5 (Fine Dust)
             </div>
-
+            <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+              <span id="val-driver-val" class="num-font font-semibold text-slate-800 dark:text-slate-200">65.0 µg/m³</span> (Limit: <span id="val-driver-safe">60.0 µg/m³</span>)
+            </div>
           </div>
 
         </div>
       </div>
 
-      <!-- MAIN 2-COLUMN SECTION: INPUTS (LEFT) & TIMELINE + GUIDELINES (RIGHT) -->
+      <!-- MAIN 2-COLUMN SECTION: SIMPLE INPUTS (LEFT) & 24H FORECAST (RIGHT) -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         
         <!-- =================================================================== -->
-        <!-- LEFT COLUMN: SENSOR INPUTS (5 COLS)                                -->
+        <!-- LEFT: USER INPUT CONTROLS (5 COLS)                                 -->
         <!-- =================================================================== -->
-        <div class="lg:col-span-5 bg-white dark:bg-appDarkCard border border-slate-200 dark:border-appDarkBorder rounded-xl p-5 space-y-4 shadow-sm">
+        <div class="lg:col-span-5 bg-white dark:bg-appDarkCard border border-slate-200 dark:border-appDarkBorder rounded-xl p-5 shadow-sm space-y-4">
           
           <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-appDarkBorder">
             <div>
-              <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <i data-lucide="sliders-horizontal" class="w-4 h-4 text-sky-500"></i>
-                Today's Air Readings
-              </h3>
-              <p class="text-xs text-slate-500 dark:text-slate-400">Adjust values to see tomorrow's forecast update in real-time</p>
+              <h3 class="font-bold text-slate-900 dark:text-white">Air Quality Inputs</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Move sliders to see tomorrow's forecast update</p>
             </div>
-            <button onclick="resetDefaults()" class="px-2.5 py-1 text-xs rounded-md bg-slate-100 dark:bg-appDarkCardSub text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 font-medium transition-all" title="Reset to default scenario">
+            <button onclick="resetDefaults()" class="px-2.5 py-1 text-xs rounded-md bg-slate-100 dark:bg-appDarkCardSub text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 font-medium transition-all">
               Reset
             </button>
           </div>
 
-          <!-- PRIMARY SLIDERS -->
-          <div class="space-y-4">
+          <!-- THE 5 CLEAN SLIDERS -->
+          <div class="space-y-3.5">
             
             <!-- 1. TODAY'S AQI -->
-            <div class="p-3 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/60 dark:border-appDarkBorder">
-              <div class="flex justify-between items-center mb-1">
-                <div>
-                  <label for="in-aqi" class="font-semibold text-slate-800 dark:text-slate-200 text-xs">Today's Current AQI</label>
-                  <span class="text-[11px] text-slate-400 block">Overall air quality index for today</span>
-                </div>
-                <div class="flex items-center gap-1.5">
-                  <input type="number" id="in-aqi" min="5" max="500" value="138" class="w-16 px-2 py-1 text-right rounded-md bg-white dark:bg-appDarkBg border border-slate-300 dark:border-appDarkBorder font-bold num-font text-slate-900 dark:text-white text-xs">
-                  <span class="text-xs text-slate-500">AQI</span>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between">
+                <label for="in-aqi" class="text-xs font-bold text-slate-800 dark:text-slate-200">Today's AQI</label>
+                <div class="flex items-center gap-1">
+                  <input type="number" id="in-aqi" min="5" max="500" value="138" class="w-16 px-1.5 py-0.5 text-right rounded bg-slate-100 dark:bg-appDarkCardSub border border-slate-200 dark:border-appDarkBorder font-bold num-font text-xs text-slate-900 dark:text-white">
+                  <span class="text-[11px] text-slate-400">pts</span>
                 </div>
               </div>
               <input type="range" id="rng-aqi" min="5" max="500" value="138">
               <div class="flex justify-between text-[10px] text-slate-400 font-medium">
-                <span>0 (Good)</span>
-                <span class="text-amber-500 font-semibold">100 (Unhealthy Threshold)</span>
-                <span>500 (Severe)</span>
+                <span>0 Good</span>
+                <span class="text-amber-500 font-semibold">100 Unhealthy</span>
+                <span>500 Severe</span>
               </div>
             </div>
 
-            <!-- 2. YESTERDAY'S AQI (LAG) -->
-            <div class="p-3 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/60 dark:border-appDarkBorder">
-              <div class="flex justify-between items-center mb-1">
-                <div>
-                  <label for="in-prev-aqi" class="font-semibold text-slate-800 dark:text-slate-200 text-xs">Yesterday's AQI (Trend)</label>
-                  <span class="text-[11px] text-slate-400 block">Past 24-hour baseline memory</span>
-                </div>
-                <div class="flex items-center gap-1.5">
-                  <input type="number" id="in-prev-aqi" min="5" max="500" value="125" class="w-16 px-2 py-1 text-right rounded-md bg-white dark:bg-appDarkBg border border-slate-300 dark:border-appDarkBorder font-bold num-font text-slate-900 dark:text-white text-xs">
-                  <span class="text-xs text-slate-500">AQI</span>
+            <!-- 2. YESTERDAY'S AQI -->
+            <div class="space-y-1">
+              <div class="flex items-center justify-between">
+                <label for="in-prev-aqi" class="text-xs font-semibold text-slate-800 dark:text-slate-200">Yesterday's AQI</label>
+                <div class="flex items-center gap-1">
+                  <input type="number" id="in-prev-aqi" min="5" max="500" value="125" class="w-16 px-1.5 py-0.5 text-right rounded bg-slate-100 dark:bg-appDarkCardSub border border-slate-200 dark:border-appDarkBorder font-bold num-font text-xs text-slate-900 dark:text-white">
+                  <span class="text-[11px] text-slate-400">pts</span>
                 </div>
               </div>
               <input type="range" id="rng-prev-aqi" min="5" max="500" value="125">
-              <div class="flex justify-between text-[10px] text-slate-400 font-medium">
-                <span>Previous day inertia</span>
-                <span id="prev-aqi-indicator" class="text-slate-500">Lag correlation</span>
-              </div>
             </div>
 
-            <!-- 3. PM2.5 (FINE PARTICULATES) -->
-            <div class="p-3 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/60 dark:border-appDarkBorder">
-              <div class="flex justify-between items-center mb-1">
-                <div>
-                  <label for="in-pm25" class="font-semibold text-slate-800 dark:text-slate-200 text-xs">PM2.5 (Fine Dust / Smoke)</label>
-                  <span class="text-[11px] text-slate-400 block">Safe 24h limit: 60.0 µg/m³</span>
-                </div>
-                <div class="flex items-center gap-1.5">
-                  <input type="number" id="in-pm25" step="0.5" min="1" max="450" value="65.0" class="w-16 px-2 py-1 text-right rounded-md bg-white dark:bg-appDarkBg border border-slate-300 dark:border-appDarkBorder font-bold num-font text-slate-900 dark:text-white text-xs">
-                  <span class="text-xs text-slate-500">µg/m³</span>
+            <!-- 3. PM2.5 -->
+            <div class="space-y-1">
+              <div class="flex items-center justify-between">
+                <label for="in-pm25" class="text-xs font-semibold text-slate-800 dark:text-slate-200">PM2.5 (Fine Dust / Smoke)</label>
+                <div class="flex items-center gap-1">
+                  <input type="number" id="in-pm25" step="0.5" min="1" max="450" value="65.0" class="w-16 px-1.5 py-0.5 text-right rounded bg-slate-100 dark:bg-appDarkCardSub border border-slate-200 dark:border-appDarkBorder font-bold num-font text-xs text-slate-900 dark:text-white">
+                  <span class="text-[11px] text-slate-400">µg/m³</span>
                 </div>
               </div>
               <input type="range" id="rng-pm25" min="1" max="450" step="0.5" value="65.0">
             </div>
 
-            <!-- 4. NO2 (NITROGEN DIOXIDE) -->
-            <div class="p-3 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/60 dark:border-appDarkBorder">
-              <div class="flex justify-between items-center mb-1">
-                <div>
-                  <label for="in-no2" class="font-semibold text-slate-800 dark:text-slate-200 text-xs">NO2 (Vehicle Exhaust)</label>
-                  <span class="text-[11px] text-slate-400 block">Safe 24h limit: 80.0 µg/m³</span>
-                </div>
-                <div class="flex items-center gap-1.5">
-                  <input type="number" id="in-no2" step="0.5" min="1" max="250" value="42.0" class="w-16 px-2 py-1 text-right rounded-md bg-white dark:bg-appDarkBg border border-slate-300 dark:border-appDarkBorder font-bold num-font text-slate-900 dark:text-white text-xs">
-                  <span class="text-xs text-slate-500">µg/m³</span>
+            <!-- 4. NO2 -->
+            <div class="space-y-1">
+              <div class="flex items-center justify-between">
+                <label for="in-no2" class="text-xs font-semibold text-slate-800 dark:text-slate-200">NO2 (Traffic Exhaust)</label>
+                <div class="flex items-center gap-1">
+                  <input type="number" id="in-no2" step="0.5" min="1" max="250" value="42.0" class="w-16 px-1.5 py-0.5 text-right rounded bg-slate-100 dark:bg-appDarkCardSub border border-slate-200 dark:border-appDarkBorder font-bold num-font text-xs text-slate-900 dark:text-white">
+                  <span class="text-[11px] text-slate-400">µg/m³</span>
                 </div>
               </div>
               <input type="range" id="rng-no2" min="1" max="250" step="0.5" value="42.0">
             </div>
 
-            <!-- 5. CO (CARBON MONOXIDE) -->
-            <div class="p-3 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/60 dark:border-appDarkBorder">
-              <div class="flex justify-between items-center mb-1">
-                <div>
-                  <label for="in-co" class="font-semibold text-slate-800 dark:text-slate-200 text-xs">CO (Carbon Monoxide)</label>
-                  <span class="text-[11px] text-slate-400 block">Safe 8h limit: 2.0 mg/m³</span>
-                </div>
-                <div class="flex items-center gap-1.5">
-                  <input type="number" id="in-co" step="0.05" min="0.05" max="15.0" value="1.30" class="w-16 px-2 py-1 text-right rounded-md bg-white dark:bg-appDarkBg border border-slate-300 dark:border-appDarkBorder font-bold num-font text-slate-900 dark:text-white text-xs">
-                  <span class="text-xs text-slate-500">mg/m³</span>
+            <!-- 5. CO -->
+            <div class="space-y-1">
+              <div class="flex items-center justify-between">
+                <label for="in-co" class="text-xs font-semibold text-slate-800 dark:text-slate-200">CO (Carbon Monoxide)</label>
+                <div class="flex items-center gap-1">
+                  <input type="number" id="in-co" step="0.05" min="0.05" max="15.0" value="1.30" class="w-16 px-1.5 py-0.5 text-right rounded bg-slate-100 dark:bg-appDarkCardSub border border-slate-200 dark:border-appDarkBorder font-bold num-font text-xs text-slate-900 dark:text-white">
+                  <span class="text-[11px] text-slate-400">mg/m³</span>
                 </div>
               </div>
               <input type="range" id="rng-co" min="0.05" max="15.0" step="0.05" value="1.30">
@@ -396,7 +317,7 @@
 
           </div>
 
-          <!-- COLLAPSIBLE: ADDITIONAL CHEMICALS & SEASON -->
+          <!-- COLLAPSIBLE: SHOW MORE + (ADDITIONAL POLLUTANTS & SEASON) -->
           <div class="pt-2 border-t border-slate-200 dark:border-appDarkBorder">
             <button onclick="toggleSecondaryAccordion()" class="w-full flex items-center justify-between text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white py-1 transition-all">
               <span class="flex items-center gap-1.5">
@@ -405,31 +326,31 @@
               <span id="accordion-indicator" class="text-xs text-slate-400 font-normal">Show More +</span>
             </button>
 
-            <div id="secondary-panel" class="hidden mt-3 space-y-3 pt-2">
+            <div id="secondary-panel" class="hidden mt-3 space-y-3 pt-1">
               <div class="grid grid-cols-2 gap-3">
-                <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/60 dark:border-appDarkBorder">
-                  <label for="in-pm10" class="text-[11px] font-medium text-slate-500 dark:text-slate-400 block">PM10 (Coarse Dust)</label>
-                  <div class="flex items-center gap-1 mt-1">
-                    <input type="number" id="in-pm10" value="115.0" class="w-full px-2 py-1 rounded bg-white dark:bg-appDarkBg border border-slate-300 dark:border-appDarkBorder text-xs num-font text-slate-800 dark:text-slate-200">
+                <div class="p-2 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/60 dark:border-appDarkBorder">
+                  <label for="in-pm10" class="text-[10px] font-medium text-slate-500 dark:text-slate-400 block">PM10 (Coarse Dust)</label>
+                  <div class="flex items-center gap-1 mt-0.5">
+                    <input type="number" id="in-pm10" value="115.0" class="w-full px-1.5 py-0.5 rounded bg-white dark:bg-appDarkBg border border-slate-300 dark:border-appDarkBorder text-xs num-font text-slate-800 dark:text-slate-200">
                     <span class="text-[10px] text-slate-400">µg/m³</span>
                   </div>
                 </div>
-                <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/60 dark:border-appDarkBorder">
-                  <label for="in-so2" class="text-[11px] font-medium text-slate-500 dark:text-slate-400 block">SO2 (Sulfur Dioxide)</label>
-                  <div class="flex items-center gap-1 mt-1">
-                    <input type="number" id="in-so2" value="14.5" class="w-full px-2 py-1 rounded bg-white dark:bg-appDarkBg border border-slate-300 dark:border-appDarkBorder text-xs num-font text-slate-800 dark:text-slate-200">
+                <div class="p-2 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/60 dark:border-appDarkBorder">
+                  <label for="in-so2" class="text-[10px] font-medium text-slate-500 dark:text-slate-400 block">SO2 (Sulfur Dioxide)</label>
+                  <div class="flex items-center gap-1 mt-0.5">
+                    <input type="number" id="in-so2" value="14.5" class="w-full px-1.5 py-0.5 rounded bg-white dark:bg-appDarkBg border border-slate-300 dark:border-appDarkBorder text-xs num-font text-slate-800 dark:text-slate-200">
                     <span class="text-[10px] text-slate-400">µg/m³</span>
                   </div>
                 </div>
               </div>
 
               <!-- Month Selection -->
-              <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/60 dark:border-appDarkBorder">
+              <div class="p-2 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/60 dark:border-appDarkBorder">
                 <div class="flex justify-between items-center mb-1">
-                  <label for="in-month" class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Calendar Month (Seasonal Inversion)</label>
-                  <span id="month-inversion-badge" class="text-[10px] px-1.5 py-0.5 rounded font-semibold bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300">Winter Inversion</span>
+                  <label for="in-month" class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Calendar Month (Inversion Factor)</label>
+                  <span id="month-inversion-badge" class="text-[9px] px-1.5 py-0.5 rounded font-semibold bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300">Winter Inversion</span>
                 </div>
-                <select id="in-month" onchange="onParameterScrub()" class="w-full mt-1 px-2.5 py-1.5 rounded-md bg-white dark:bg-appDarkBg border border-slate-300 dark:border-appDarkBorder text-xs text-slate-800 dark:text-slate-200 font-medium">
+                <select id="in-month" onchange="onParameterScrub()" class="w-full mt-0.5 px-2 py-1 rounded bg-white dark:bg-appDarkBg border border-slate-300 dark:border-appDarkBorder text-xs text-slate-800 dark:text-slate-200 font-medium">
                   <option value="1">January (Winter Inversion)</option>
                   <option value="2">February (Winter Inversion)</option>
                   <option value="3">March (Spring)</option>
@@ -451,11 +372,11 @@
         </div>
 
         <!-- =================================================================== -->
-        <!-- RIGHT COLUMN: 24H FORECAST TIMELINE & ACTION DIRECTIVES (7 COLS)    -->
+        <!-- RIGHT: 24H FORECAST TIMELINE & ACTIONS (7 COLS)                    -->
         <!-- =================================================================== -->
         <div class="lg:col-span-7 space-y-5">
           
-          <!-- 24-HOUR FORECAST TIMELINE CHART -->
+          <!-- 24-HOUR FORECAST TIMELINE -->
           <div class="bg-white dark:bg-appDarkCard border border-slate-200 dark:border-appDarkBorder rounded-xl p-5 shadow-sm space-y-3">
             
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-200 dark:border-appDarkBorder">
@@ -464,7 +385,7 @@
                   <i data-lucide="line-chart" class="w-4 h-4 text-sky-500"></i>
                   24-Hour Forecast Timeline
                 </h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Hourly trajectory from current readings to tomorrow's predicted AQI</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Hourly projection from now to tomorrow</p>
               </div>
 
               <!-- Interactive Hover Badge -->
@@ -472,8 +393,6 @@
                 <span class="text-slate-500">Offset: <strong id="hud-offset" class="text-slate-800 dark:text-slate-200 num-font">+12h</strong></span>
                 <span class="text-slate-300 dark:text-slate-600">|</span>
                 <span class="text-slate-500">AQI: <strong id="hud-aqi" class="text-sky-600 dark:text-sky-400 num-font font-bold">---</strong></span>
-                <span class="text-slate-300 dark:text-slate-600">|</span>
-                <span class="text-slate-500">PM2.5: <strong id="hud-pm25" class="text-amber-600 dark:text-amber-400 num-font">--.-</strong></span>
               </div>
             </div>
 
@@ -490,7 +409,7 @@
                     <span class="w-3 h-0.5 bg-sky-500 rounded"></span> Predicted AQI
                   </span>
                   <span class="flex items-center gap-1.5 font-medium">
-                    <span class="w-3 h-0.5 border-t border-dashed border-red-500"></span> Unhealthy Threshold (100 AQI)
+                    <span class="w-3 h-0.5 border-t border-dashed border-red-500"></span> Unhealthy Threshold
                   </span>
                 </div>
                 <span class="text-[10px] text-slate-400">Hover across chart to inspect</span>
@@ -503,10 +422,10 @@
 
               <!-- Hourly X-Axis Labels -->
               <div id="timeline-x-labels" class="flex justify-between text-[10px] text-slate-500 dark:text-slate-400 pt-2 px-1 border-t border-slate-200 dark:border-appDarkBorder">
-                <span>Now (T+0h)</span>
+                <span>Now</span>
                 <span>+6h</span>
-                <span>+12h (Midday)</span>
-                <span>+18h (Evening)</span>
+                <span>+12h</span>
+                <span>+18h</span>
                 <span>+24h (Tomorrow)</span>
               </div>
 
@@ -514,20 +433,17 @@
 
           </div>
 
-          <!-- ACTIONABLE GUIDELINES & DIRECTIVES -->
+          <!-- ACTIONABLE RECOMMENDATIONS -->
           <div class="bg-white dark:bg-appDarkCard border border-slate-200 dark:border-appDarkBorder rounded-xl p-5 shadow-sm space-y-3">
             
             <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-appDarkBorder">
               <div>
                 <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
                   <i data-lucide="shield-check" class="w-4 h-4 text-emerald-500"></i>
-                  Recommended Actions & Early Warning Guidance
+                  Recommended Actions
                 </h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Pre-emptive measures to take before tomorrow's air shifts</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Precautionary advice based on tomorrow's forecast</p>
               </div>
-              <span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-appDarkCardSub text-slate-600 dark:text-slate-300 font-medium">
-                24h Advance Notice
-              </span>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
@@ -592,41 +508,6 @@
 
       </div>
 
-      <!-- COLLAPSIBLE: MODEL BENCHMARK EVALUATION (HONEST, TRANSPARENT STATS) -->
-      <div class="bg-white dark:bg-appDarkCard border border-slate-200 dark:border-appDarkBorder rounded-xl p-4 shadow-sm">
-        <button onclick="toggleBenchmarks()" class="w-full flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white py-1 transition-all">
-          <span class="flex items-center gap-2">
-            <i data-lucide="award" class="w-4 h-4 text-emerald-500"></i>
-            Model Benchmarks & Scientific Validation (Tested across 4,408 days)
-          </span>
-          <span id="benchmarks-toggle-indicator" class="text-xs text-slate-400 font-normal">View 7-Model Evaluation Matrix +</span>
-        </button>
-
-        <div id="benchmarks-panel" class="hidden mt-3 pt-3 border-t border-slate-200 dark:border-appDarkBorder space-y-3">
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-50 dark:bg-appDarkBg text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-appDarkBorder font-semibold">
-                <tr>
-                  <th class="p-2.5">Model Architecture</th>
-                  <th class="p-2.5">Algorithm Family</th>
-                  <th class="p-2.5">Accuracy</th>
-                  <th class="p-2.5">F1 Score</th>
-                  <th class="p-2.5">ROC-AUC</th>
-                  <th class="p-2.5">Status</th>
-                </tr>
-              </thead>
-              <tbody id="benchmark-tbody" class="divide-y divide-slate-100 dark:divide-appDarkBorder text-slate-700 dark:text-slate-300">
-                <!-- Injected via JS -->
-              </tbody>
-            </table>
-          </div>
-          <div class="text-[11px] text-slate-500 dark:text-slate-400 flex flex-col sm:flex-row justify-between pt-1">
-            <span>• Regression Error: Random Forest RMSE 32.96 vs 41.96 for today's persistence rule (-21.5% error).</span>
-            <span>• External Station Test: 74,402 unseen readings verified with 0.9385 F1.</span>
-          </div>
-        </div>
-      </div>
-
     </div>
 
     <!-- VIEW 2: HOURLY DATA TABLE VIEW -->
@@ -634,7 +515,7 @@
       <div class="bg-white dark:bg-appDarkCard border border-slate-200 dark:border-appDarkBorder rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
         <div>
           <h3 class="font-bold text-slate-900 dark:text-white text-sm">24-Hour Discrete Hourly Records</h3>
-          <p class="text-xs text-slate-500 dark:text-slate-400">Tabular projection of AQI and pollutant concentrations from T+0 to T+24h</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Hourly projection of AQI and pollutant concentrations from T+0 to T+24h</p>
         </div>
         <button onclick="downloadCSV()" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-600 hover:bg-sky-500 text-white shadow-sm flex items-center gap-1.5 self-start sm:self-center">
           <i data-lucide="download" class="w-3.5 h-3.5"></i> Download CSV File
@@ -652,7 +533,7 @@
                 <th class="p-3 text-right">PM2.5 (µg/m³)</th>
                 <th class="p-3 text-right">NO2 (µg/m³)</th>
                 <th class="p-3 text-right">CO (mg/m³)</th>
-                <th class="p-3 text-center">Health Status</th>
+                <th class="p-3 text-center">Status</th>
               </tr>
             </thead>
             <tbody id="raw-table-tbody" class="divide-y divide-slate-100 dark:divide-appDarkBorder text-slate-700 dark:text-slate-300">
@@ -666,36 +547,31 @@
   </main>
 
   <!-- ========================================================================= -->
-  <!-- 4. CLEAN FOOTER                                                           -->
+  <!-- 3. FOOTER                                                                 -->
   <!-- ========================================================================= -->
   <footer class="mt-auto border-t border-slate-200 dark:border-appDarkBorder py-4 px-4 sm:px-6 bg-white dark:bg-appDarkCard text-xs text-slate-500 dark:text-slate-400">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
       <div class="flex items-center gap-2">
-        <span class="font-semibold text-slate-700 dark:text-slate-300">AeroCast ML</span>
+        <span class="font-semibold text-slate-700 dark:text-slate-300">AeroCast</span>
         <span>•</span>
-        <span>24h Air Quality Forecasting & Early Warning</span>
+        <span>24-Hour Air Quality Forecast powered by Random Forest</span>
       </div>
       <div class="flex items-center gap-3">
-        <span>Trained on CPCB Air Quality Datasets</span>
-        <span>•</span>
-        <span>CPCB / EPA Air Quality Scale</span>
+        <span>Standard CPCB / EPA AQI Brackets</span>
       </div>
     </div>
   </footer>
 
   <!-- ========================================================================= -->
-  <!-- 5. JAVASCRIPT CONTROLLER                                                  -->
+  <!-- 4. JAVASCRIPT CONTROLLER                                                  -->
   <!-- ========================================================================= -->
   <script>
     let currentData = null;
-    let presets = [];
     let debounceTimer = null;
     let selectedStepIndex = 12;
-    let activePresetId = "traffic_moderate";
 
     const paramIds = ["aqi", "prev-aqi", "pm25", "no2", "co"];
 
-    // EPA Categories definition
     const EPA_LEVELS = [
       { name: "Good", min: 0, max: 50, color: "#10b981", badgeBg: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200" },
       { name: "Satisfactory", min: 51, max: 100, color: "#84cc16", badgeBg: "bg-lime-100 text-lime-800 dark:bg-lime-950 dark:text-lime-200" },
@@ -737,15 +613,14 @@
     }
 
     function onParameterScrub() {
-      // Inversion check
       const m = parseInt(document.getElementById("in-month").value) || 11;
       const invBadge = document.getElementById("month-inversion-badge");
       if (invBadge) {
         if ([11, 12, 1, 2].includes(m)) {
-          invBadge.className = "text-[10px] px-1.5 py-0.5 rounded font-semibold bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300";
+          invBadge.className = "text-[9px] px-1.5 py-0.5 rounded font-semibold bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300";
           invBadge.textContent = "Winter Inversion";
         } else {
-          invBadge.className = "text-[10px] px-1.5 py-0.5 rounded font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300";
+          invBadge.className = "text-[9px] px-1.5 py-0.5 rounded font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300";
           invBadge.textContent = "Normal Dispersion";
         }
       }
@@ -753,7 +628,7 @@
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => {
         fetchTelemetry();
-      }, 70);
+      }, 60);
     }
 
     function getPayload() {
@@ -802,10 +677,10 @@
       const alertTag = document.getElementById("badge-alert-status");
       if (isUnhealthy) {
         alertTag.className = "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300";
-        alertTag.textContent = "⚠️ Unhealthy Alert (>100)";
+        alertTag.textContent = "⚠️ Unhealthy Alert";
       } else {
         alertTag.className = "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300";
-        alertTag.textContent = "✓ Safe Air Quality (≤100)";
+        alertTag.textContent = "✓ Safe Air Quality";
       }
 
       // Hero headline & delta
@@ -814,16 +689,16 @@
       const todayAqi = data.current_aqi;
       const diff = Math.round(pred - todayAqi);
 
-      if (pred > 100) {
+      if (isUnhealthy) {
         headline.textContent = `Warning: Air quality will be ${catMeta.name.toLowerCase()} tomorrow.`;
       } else {
         headline.textContent = `Air quality will remain ${catMeta.name.toLowerCase()} and safe tomorrow.`;
       }
 
       if (diff > 0) {
-        deltaText.innerHTML = `Predicted to be <strong class="text-rose-600 dark:text-rose-400 font-semibold">+${diff} AQI pts higher</strong> than today (air quality is worsening).`;
+        deltaText.innerHTML = `Predicted to be <strong class="text-rose-600 dark:text-rose-400 font-semibold">+${diff} pts higher</strong> than today (air quality is worsening).`;
       } else if (diff < 0) {
-        deltaText.innerHTML = `Predicted to be <strong class="text-emerald-600 dark:text-emerald-400 font-semibold">${diff} AQI pts lower</strong> than today (air quality is improving).`;
+        deltaText.innerHTML = `Predicted to be <strong class="text-emerald-600 dark:text-emerald-400 font-semibold">${diff} pts lower</strong> than today (air quality is improving).`;
       } else {
         deltaText.innerHTML = `Predicted to remain stable at around current levels.`;
       }
@@ -836,17 +711,14 @@
       
       const drvBadge = document.getElementById("driver-status-badge");
       if (drv.exceeded) {
-        drvBadge.className = "px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300";
+        drvBadge.className = "text-[10px] font-bold text-rose-600 dark:text-rose-400";
         drvBadge.textContent = `${drv.pct_of_limit}% of safe ceiling`;
       } else {
-        drvBadge.className = "px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300";
+        drvBadge.className = "text-[10px] font-bold text-emerald-600 dark:text-emerald-400";
         drvBadge.textContent = "Within safe limit";
       }
 
-      // 3. Confidence
-      document.getElementById("val-confidence-pct").textContent = `${data.confidence_pct}%`;
-
-      // 4. Action Directives
+      // 3. Action Directives
       if (data.operational_protocols && data.operational_protocols.length >= 4) {
         document.getElementById("adv-schools").textContent = data.operational_protocols[0].instruction;
         document.getElementById("adv-sensitive").textContent = data.operational_protocols[1].instruction;
@@ -854,10 +726,10 @@
         document.getElementById("adv-indoor").textContent = data.operational_protocols[3].instruction;
       }
 
-      // 5. Draw Smooth Canvas Timeline
+      // 4. Draw Smooth Canvas Timeline
       drawForecastTimeline(data.timeline);
 
-      // 6. Render Data Table
+      // 5. Render Data Table
       renderTableRows(data.timeline);
     }
 
@@ -884,7 +756,7 @@
       const minVal = 0;
       const maxVal = Math.max(300, ...timeline.map(t => t.aqi * 1.15));
 
-      // 1. Subtle horizontal grid lines
+      // 1. Horizontal grid lines
       ctx.strokeStyle = isDark ? "#232733" : "#e2e8f0";
       ctx.lineWidth = 1;
       const gridLevels = [50, 100, 200, 300];
@@ -896,14 +768,13 @@
           ctx.lineTo(w, y);
           ctx.stroke();
 
-          // Axis label
           ctx.fillStyle = isDark ? "#64748b" : "#94a3b8";
           ctx.font = "10px Inter, sans-serif";
           ctx.fillText(lvl, 4, y - 3);
         }
       });
 
-      // 2. Dashed 100 AQI Threshold Line
+      // 2. Dashed Unhealthy Threshold Line
       const threshY = h - ((100 - minVal) / (maxVal - minVal)) * h;
       ctx.strokeStyle = "#ef4444";
       ctx.lineWidth = 1.5;
@@ -999,7 +870,7 @@
     function onChartMouseLeave() {
       const ch = document.getElementById("chart-crosshair");
       if (ch) ch.style.display = "none";
-      updateChartScrubHUD(12); // reset to +12h mid-point
+      updateChartScrubHUD(12);
     }
 
     function updateChartScrubHUD(idx) {
@@ -1009,7 +880,6 @@
 
       document.getElementById("hud-offset").textContent = pt.hour_offset;
       document.getElementById("hud-aqi").textContent = Math.round(pt.aqi);
-      document.getElementById("hud-pm25").textContent = pt.pm25.toFixed(1);
     }
 
     // RENDER HOURLY TABLE
@@ -1060,6 +930,19 @@
       }
     }
 
+    // TOGGLE SHOW MORE ACCORDION
+    function toggleSecondaryAccordion() {
+      const p = document.getElementById("secondary-panel");
+      const ind = document.getElementById("accordion-indicator");
+      if (p.classList.contains("hidden")) {
+        p.classList.remove("hidden");
+        ind.textContent = "Show Less -";
+      } else {
+        p.classList.add("hidden");
+        ind.textContent = "Show More +";
+      }
+    }
+
     // CSV EXPORT
     async function downloadCSV() {
       const payload = getPayload();
@@ -1082,69 +965,21 @@
       }
     }
 
-    // ACCORDION TOGGLES
-    function toggleSecondaryAccordion() {
-      const p = document.getElementById("secondary-panel");
-      const ind = document.getElementById("accordion-indicator");
-      if (p.classList.contains("hidden")) {
-        p.classList.remove("hidden");
-        ind.textContent = "Show Less -";
-      } else {
-        p.classList.add("hidden");
-        ind.textContent = "Show More +";
-      }
-    }
-
-    function toggleBenchmarks() {
-      const p = document.getElementById("benchmarks-panel");
-      const ind = document.getElementById("benchmarks-toggle-indicator");
-      if (p.classList.contains("hidden")) {
-        p.classList.remove("hidden");
-        ind.textContent = "Hide Benchmarks -";
-      } else {
-        p.classList.add("hidden");
-        ind.textContent = "View 7-Model Evaluation Matrix +";
-      }
-    }
-
-    // APPLY PRESET
-    function applyPreset(p, idx) {
-      activePresetId = p.id;
-
-      // Update button styles
-      const btns = document.querySelectorAll(".preset-pill");
-      btns.forEach((b, i) => {
-        if (i === idx) {
-          b.className = "preset-pill px-3 py-1 rounded-full text-xs font-semibold bg-sky-600 text-white shadow-sm flex items-center gap-1.5 transition-all";
-        } else {
-          b.className = "preset-pill px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-appDarkCardSub hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-appDarkBorder flex items-center gap-1.5 transition-all";
-        }
-      });
-
-      document.getElementById("in-aqi").value = p.data.aqi;
-      document.getElementById("rng-aqi").value = p.data.aqi;
-
-      document.getElementById("in-prev-aqi").value = p.data.prev_aqi;
-      document.getElementById("rng-prev-aqi").value = p.data.prev_aqi;
-
-      document.getElementById("in-pm25").value = p.data.pm25;
-      document.getElementById("rng-pm25").value = p.data.pm25;
-
-      document.getElementById("in-no2").value = p.data.no2;
-      document.getElementById("rng-no2").value = p.data.no2;
-
-      document.getElementById("in-co").value = p.data.co;
-      document.getElementById("rng-co").value = p.data.co;
-
-      document.getElementById("in-pm10").value = p.data.pm10;
-      document.getElementById("in-so2").value = p.data.so2;
-      document.getElementById("in-month").value = p.data.month;
-
-      onParameterScrub();
-    }
-
     function resetDefaults() {
-      if (presets.length > 2) applyPreset(presets[2], 2);
+      document.getElementById("in-aqi").value = 138;
+      document.getElementById("rng-aqi").value = 138;
+      document.getElementById("in-prev-aqi").value = 125;
+      document.getElementById("rng-prev-aqi").value = 125;
+      document.getElementById("in-pm25").value = 65.0;
+      document.getElementById("rng-pm25").value = 65.0;
+      document.getElementById("in-no2").value = 42.0;
+      document.getElementById("rng-no2").value = 42.0;
+      document.getElementById("in-co").value = 1.30;
+      document.getElementById("rng-co").value = 1.30;
+      document.getElementById("in-pm10").value = 115.0;
+      document.getElementById("in-so2").value = 14.5;
+      document.getElementById("in-month").value = 11;
+      onParameterScrub();
     }
 
     // THEME TOGGLE
@@ -1165,52 +1000,6 @@
     // INITIALIZATION
     window.addEventListener("DOMContentLoaded", async () => {
       initInputs();
-
-      // Load presets
-      try {
-        const presResp = await fetch("/api/presets");
-        presets = await presResp.json();
-        const cont = document.getElementById("presets-container");
-        if (cont) {
-          cont.innerHTML = presets.map((p, idx) => `
-            <button onclick='applyPreset(presets[${idx}], ${idx})' class="preset-pill px-3 py-1 rounded-full text-xs ${p.id === activePresetId ? 'font-semibold bg-sky-600 text-white shadow-sm' : 'font-medium bg-slate-100 dark:bg-appDarkCardSub hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-appDarkBorder'} flex items-center gap-1.5 transition-all">
-              <span class="w-1.5 h-1.5 rounded-full ${p.id === 'clean_baseline' ? 'bg-emerald-400' : (p.id === 'inversion_severe' ? 'bg-rose-500' : 'bg-amber-400')}"></span>
-              ${p.label}
-            </button>
-          `).join("");
-        }
-      } catch (e) {
-        console.error("Presets error:", e);
-      }
-
-      // Load Benchmarks
-      try {
-        const benchResp = await fetch("/api/benchmarks");
-        const benchmarks = await benchResp.json();
-        const tbody = document.getElementById("benchmark-tbody");
-        if (tbody) {
-          tbody.innerHTML = benchmarks.models.map(m => `
-            <tr class="${m.rank === 'CHAMPION' ? 'bg-emerald-50/70 dark:bg-emerald-950/30 font-semibold text-emerald-900 dark:text-emerald-200' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40'}">
-              <td class="p-2.5 font-medium flex items-center gap-1.5">
-                ${m.rank === 'CHAMPION' ? '<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600 inline"></i>' : ''}
-                ${m.name}
-              </td>
-              <td class="p-2.5 text-slate-500 dark:text-slate-400">${m.family}</td>
-              <td class="p-2.5 num-font">${m.acc}</td>
-              <td class="p-2.5 num-font font-bold">${m.f1}</td>
-              <td class="p-2.5 num-font">${m.auc}</td>
-              <td class="p-2.5">
-                <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${m.rank === 'CHAMPION' ? 'bg-emerald-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}">
-                  ${m.rank}
-                </span>
-              </td>
-            </tr>
-          `).join("");
-        }
-      } catch (e) {
-        console.error("Benchmarks error:", e);
-      }
-
       fetchTelemetry();
       lucide.createIcons();
     });

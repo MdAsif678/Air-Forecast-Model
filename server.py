@@ -216,6 +216,13 @@ def serve_index():
     return FileResponse("static/index.html")
 
 
+@app.get("/earlier")
+def serve_earlier():
+    if os.path.exists("static/earlier.html"):
+        return FileResponse("static/earlier.html")
+    return FileResponse("static/index.html")
+
+
 @app.get("/api/presets")
 def get_presets():
     return JSONResponse(TERMINAL_PRESETS)
@@ -260,9 +267,9 @@ def predict_telemetry(req: ForecastRequest):
 
     # Text warning banner
     if is_unhealthy:
-        warning_banner = f"Early Warning Alert: Tomorrow's forecast AQI ({round(pred_aqi, 1)}) exceeds the unhealthy threshold (>100). Primary pollutant: {driver_info['pollutant']} ({driver_info['value']} {driver_info['unit']})."
+        warning_banner = f"Early Warning Alert: Tomorrow's forecast AQI ({round(pred_aqi, 1)}) exceeds the unhealthy threshold. Primary pollutant: {driver_info['pollutant']} ({driver_info['value']} {driver_info['unit']})."
     else:
-        warning_banner = f"Air Quality Safe: Tomorrow's forecast AQI ({round(pred_aqi, 1)}) remains within healthy limits (<=100). Primary pollutant: {driver_info['pollutant']} ({driver_info['value']} {driver_info['unit']})."
+        warning_banner = f"Air Quality Safe: Tomorrow's forecast AQI ({round(pred_aqi, 1)}) remains within safe limits. Primary pollutant: {driver_info['pollutant']} ({driver_info['value']} {driver_info['unit']})."
 
     # Actionable Operational Protocols
     protocols = [

@@ -4,7 +4,8 @@
 # Saved models, created by aqi_main.py
 *.pkl
 
-# Python
+# Temporary comparison pages
+static/earlier.html
 __pycache__/
 *.pyc
 .venv/
