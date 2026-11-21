@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AeroCast 24 // Air Quality Forecast Terminal</title>
+  <title>AeroCast — 24-Hour Air Quality Forecast</title>
 
-  <!-- Google Fonts: Inter & JetBrains Mono (Strict Monospace) -->
+  <!-- Google Fonts: Inter (Interface) & JetBrains Mono (Numbers/Metrics) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -18,21 +18,15 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
             mono: ['"JetBrains Mono"', 'Consolas', 'monospace'],
           },
           colors: {
-            termBg: '#0c0d10',
-            termPanel: '#121418',
-            termBorder: '#23262d',
-            termBorderLight: '#323742',
-            // Strict solid EPA Colors - No gradients
-            epaGood: '#00E400',
-            epaSatisfactory: '#92D050',
-            epaModerate: '#FFFF00',
-            epaPoor: '#FF7E00',
-            epaVeryPoor: '#FF0000',
-            epaSevere: '#7E0023'
+            appDarkBg: '#090a0f',
+            appDarkCard: '#11131a',
+            appDarkCardSub: '#181b24',
+            appDarkBorder: '#232733',
+            appDarkBorderSub: '#2e3342'
           }
         }
       }
@@ -43,396 +37,358 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
-    /* STRICT NON-VIBE INDUSTRIAL FLAT DESIGN: NO GLOWS, NO BLURS, NO GRADIENTS */
-    * {
-      box-shadow: none !important;
-      text-shadow: none !important;
-      filter: none !important;
+    /* Clean, natural base styles */
+    body {
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+      -webkit-font-smoothing: antialiased;
     }
 
-    body {
-      background-color: #0c0d10;
-      color: #e2e8f0;
+    .num-font {
+      font-family: 'JetBrains Mono', monospace;
       font-feature-settings: "tnum" 1;
     }
 
-    html:not(.dark) body {
-      background-color: #ffffff;
-      color: #0f172a;
-    }
-
-    /* Flat panels & sharp borders */
-    .flat-panel {
-      background-color: #121418;
-      border: 1px solid #23262d;
-    }
-
-    html:not(.dark) .flat-panel {
-      background-color: #f8fafc;
-      border: 1px solid #cbd5e1;
-    }
-
-    .flat-panel-sub {
-      background-color: #16181f;
-      border: 1px solid #23262d;
-    }
-
-    html:not(.dark) .flat-panel-sub {
-      background-color: #ffffff;
-      border: 1px solid #e2e8f0;
-    }
-
-    /* Clean flat buttons */
-    .btn-term {
-      padding: 6px 12px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      font-weight: 700;
-      border: 1px solid #23262d;
-      background-color: #16181f;
-      color: #cbd5e1;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: background-color 0.1s, border-color 0.1s, color 0.1s;
-    }
-
-    .btn-term:hover {
-      background-color: #23262d;
-      color: #ffffff;
-      border-color: #38bdf8;
-    }
-
-    .btn-term.active {
-      background-color: #0284c7;
-      color: #ffffff;
-      border-color: #38bdf8;
-    }
-
-    html:not(.dark) .btn-term {
-      background-color: #f1f5f9;
-      border-color: #cbd5e1;
-      color: #334155;
-    }
-
-    html:not(.dark) .btn-term:hover {
-      background-color: #e2e8f0;
-      color: #0f172a;
-      border-color: #0284c7;
-    }
-
-    html:not(.dark) .btn-term.active {
-      background-color: #0284c7;
-      color: #ffffff;
-      border-color: #0369a1;
-    }
-
-    /* Flat Sliders with clear tracks */
+    /* Custom range slider styling (Clean, functional, non-vibecoded) */
     input[type=range] {
       -webkit-appearance: none;
       appearance: none;
       width: 100%;
       height: 6px;
-      background: #23262d;
-      border-radius: 0px;
+      background: #e2e8f0;
+      border-radius: 9999px;
       outline: none;
-      margin: 10px 0 6px 0;
+      margin: 8px 0;
+      cursor: pointer;
     }
 
-    html:not(.dark) input[type=range] {
-      background: #cbd5e1;
+    .dark input[type=range] {
+      background: #27272a;
     }
 
     input[type=range]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 14px;
-      height: 20px;
-      background: #38bdf8;
-      border: 1px solid #0284c7;
-      border-radius: 0px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 2px solid #0284c7;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
       cursor: pointer;
+      transition: transform 0.1s ease, border-color 0.1s ease;
+    }
+
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      border-color: #0369a1;
     }
 
     input[type=range]::-moz-range-thumb {
-      width: 14px;
-      height: 20px;
-      background: #38bdf8;
-      border: 1px solid #0284c7;
-      border-radius: 0px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 2px solid #0284c7;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
       cursor: pointer;
     }
 
-    /* Pinned table header */
-    .sticky-table-header th {
+    /* Pinned table headers */
+    .sticky-th {
       position: sticky;
       top: 0;
-      background: #121418;
-      z-index: 20;
-      border-bottom: 2px solid #38bdf8;
+      background: #f8fafc;
+      z-index: 10;
     }
 
-    html:not(.dark) .sticky-table-header th {
-      background: #f1f5f9;
-      border-bottom: 2px solid #0284c7;
+    .dark .sticky-th {
+      background: #11131a;
     }
 
-    /* Crosshair line */
-    .crosshair-line {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 1px;
-      background-color: #f43f5e;
-      pointer-events: none;
-      z-index: 30;
-      display: none;
+    /* Custom scrollbar for clean UI */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: #3f3f46;
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col font-sans text-xs antialiased">
+
+<body class="min-h-screen bg-slate-50 text-slate-800 dark:bg-appDarkBg dark:text-slate-100 flex flex-col font-sans text-sm selection:bg-sky-500 selection:text-white transition-colors duration-150">
 
   <!-- ========================================================================= -->
-  <!-- 1. TOP NAVBAR (CLEAN, FUNCTIONAL & INTUITIVE)                             -->
+  <!-- 1. TOP NAVIGATION BAR                                                     -->
   <!-- ========================================================================= -->
-  <header class="sticky top-0 z-50 w-full bg-termBg border-b border-termBorder h-12 px-4 sm:px-6 flex items-center justify-between font-mono">
-    
-    <!-- Left: Brand & Status -->
-    <div class="flex items-center gap-3">
-      <div class="flex items-center gap-2">
-        <span class="inline-block w-2.5 h-2.5 bg-emerald-500"></span>
-        <span class="font-extrabold text-sm tracking-wider text-white">AEROCAST 24</span>
-      </div>
-      <span class="text-slate-600 hidden sm:inline">|</span>
-      <span class="text-slate-400 text-[11px] hidden sm:inline">AIR QUALITY 24H FORECAST TERMINAL</span>
-      <span class="text-slate-600 hidden md:inline">|</span>
-      <span class="text-[10px] px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold hidden md:inline">
-        MODEL: RANDOM FOREST (0.9140 F1)
-      </span>
-    </div>
-
-    <!-- Right: View Switcher & Actions -->
-    <div class="flex items-center gap-2">
-      <!-- Dashboard vs Raw CSV View Switcher -->
-      <div class="flex border border-termBorder">
-        <button id="btn-view-terminal" onclick="switchView('terminal')" class="px-3 py-1.5 bg-sky-600 text-white font-bold flex items-center gap-1.5 text-xs">
-          <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i> DASHBOARD
-        </button>
-        <button id="btn-view-table" onclick="switchView('table')" class="px-3 py-1.5 bg-termPanel text-slate-400 hover:text-white font-bold flex items-center gap-1.5 text-xs border-l border-termBorder">
-          <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> RAW CSV TABLE
-        </button>
+  <header class="sticky top-0 z-40 w-full bg-white/95 dark:bg-appDarkCard/95 border-b border-slate-200 dark:border-appDarkBorder backdrop-blur-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+      
+      <!-- Brand & Description -->
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-sky-600 text-white flex items-center justify-center font-bold shadow-sm">
+            <i data-lucide="wind" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-base tracking-tight text-slate-900 dark:text-white">AeroCast</span>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium">24h Forecast</span>
+            </div>
+            <span class="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:inline">Air Quality Early Warning System</span>
+          </div>
+        </div>
       </div>
 
-      <!-- Export CSV -->
-      <button onclick="downloadCSV()" class="btn-term" title="Download 24h Telemetry CSV">
-        <i data-lucide="download" class="w-3.5 h-3.5 text-sky-400"></i> EXPORT CSV
-      </button>
+      <!-- Center / Right Actions -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        
+        <!-- View Tabs -->
+        <div class="flex p-0.5 rounded-lg bg-slate-100 dark:bg-appDarkCardSub border border-slate-200 dark:border-appDarkBorder">
+          <button id="tab-btn-dashboard" onclick="switchView('dashboard')" class="px-3 py-1.5 rounded-md text-xs font-semibold bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm flex items-center gap-1.5 transition-all">
+            <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-sky-500"></i>
+            <span>Dashboard</span>
+          </button>
+          <button id="tab-btn-table" onclick="switchView('table')" class="px-3 py-1.5 rounded-md text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-1.5 transition-all">
+            <i data-lucide="table" class="w-3.5 h-3.5"></i>
+            <span>Hourly Data</span>
+          </button>
+        </div>
 
-      <!-- Theme Switch -->
-      <button onclick="toggleTheme()" class="btn-term" title="Toggle Dark/Light Mode">
-        <span id="theme-btn-text">DARK MODE</span>
-      </button>
+        <!-- Export CSV Button -->
+        <button onclick="downloadCSV()" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-appDarkCardSub border border-slate-200 dark:border-appDarkBorder text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 shadow-sm flex items-center gap-1.5 transition-all" title="Export 24h predictions to CSV">
+          <i data-lucide="download" class="w-3.5 h-3.5 text-slate-500"></i>
+          <span class="hidden md:inline">Export CSV</span>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button onclick="toggleTheme()" class="p-2 rounded-lg bg-white dark:bg-appDarkCardSub border border-slate-200 dark:border-appDarkBorder text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 shadow-sm transition-all" title="Toggle Light/Dark Mode">
+          <i id="theme-icon" data-lucide="sun" class="w-4 h-4"></i>
+        </button>
+
+      </div>
     </div>
   </header>
 
   <!-- ========================================================================= -->
-  <!-- 2. SCENARIO PRESETS BAR (CLEAN, READABLE BUTTONS)                         -->
+  <!-- 2. CITY / SCENARIO QUICK PRESETS BAR                                      -->
   <!-- ========================================================================= -->
-  <div class="w-full bg-termPanel border-b border-termBorder px-4 sm:px-6 py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 font-mono text-[11px]">
-    <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
-      <span class="text-slate-400 font-bold uppercase tracking-wider shrink-0 flex items-center gap-1">
-        <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i> QUICK SCENARIOS:
-      </span>
-      <div id="presets-button-group" class="flex items-center gap-1.5">
-        <!-- Injected via JavaScript with clean clickable buttons -->
-      </div>
-    </div>
-    <div class="text-[10px] text-slate-500 shrink-0 self-end sm:self-center">
-      TIME (UTC): <span id="live-utc-clock" class="text-slate-300 font-bold">--:--:-- UTC</span>
-    </div>
-  </div>
-
-  <!-- ========================================================================= -->
-  <!-- 3. MAIN WORKSPACE CONTAINER                                               -->
-  <!-- ========================================================================= -->
-  <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-4 space-y-4">
-
-    <!-- ===================================================================== -->
-    <!-- VIEW 1: MAIN DASHBOARD                                                -->
-    <!-- ===================================================================== -->
-    <div id="view-terminal" class="space-y-4">
+  <section class="border-b border-slate-200 dark:border-appDarkBorder bg-white/70 dark:bg-appDarkCard/70 px-4 sm:px-6 py-2.5">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-2.5">
       
-      <!-- TOP STATUS: CLEAR EXPLICIT WARNING BANNER -->
-      <div id="hero-warning-banner" class="p-3.5 border font-mono text-xs font-bold flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-        <div class="flex items-center gap-2.5">
-          <span id="banner-icon-box" class="px-2.5 py-1 bg-red-600 text-white font-black text-xs">[CRITICAL ALERT]</span>
-          <span id="banner-text" class="text-sm">CALCULATING 24-HOUR FORECAST TELEMETRY...</span>
-        </div>
-        <div class="text-[11px] text-slate-300 shrink-0 self-end sm:self-center">
-          RISK PROBABILITY: <span id="banner-confidence" class="font-black text-white text-sm">--%</span>
+      <!-- Preset Buttons -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 shrink-0 flex items-center gap-1.5 mr-1">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-sky-500"></i> Location Profiles:
+        </span>
+        <div id="presets-container" class="flex items-center gap-1.5">
+          <!-- Populated dynamically via JS -->
         </div>
       </div>
 
-      <!-- KEY RESULTS HERO SUMMARY (3 CLEAN BALANCED CARDS) -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 font-mono">
-        
-        <!-- CARD 1: TOMORROW'S PREDICTED AQI -->
-        <div class="flat-panel p-4 flex flex-col justify-between">
-          <div class="flex justify-between items-start">
-            <span class="text-slate-400 font-bold text-xs uppercase">TOMORROW'S FORECAST AQI</span>
-            <span id="hero-category-tag" class="px-2.5 py-0.5 text-xs font-black uppercase text-black bg-yellow-400">
-              MODERATE
-            </span>
-          </div>
-          <div class="my-2 flex items-baseline gap-3">
-            <span id="hero-aqi-value" class="text-5xl font-black text-white tracking-tight">---</span>
-            <span class="text-slate-400 text-xs font-bold">AQI PTS</span>
-          </div>
-          <div class="border-t border-termBorder pt-2 flex justify-between text-[11px]">
-            <span class="text-slate-400">CHANGE FROM TODAY:</span>
-            <span id="hero-delta-value" class="font-bold">---</span>
-          </div>
-        </div>
-
-        <!-- CARD 2: PRIMARY POLLUTANT DRIVER -->
-        <div class="flat-panel p-4 flex flex-col justify-between">
-          <div class="flex justify-between items-start">
-            <span class="text-slate-400 font-bold text-xs uppercase">PRIMARY POLLUTANT DRIVER</span>
-            <span id="driver-status-tag" class="px-2 py-0.5 text-[10px] font-bold text-white bg-red-600 uppercase">
-              EXCEEDED
-            </span>
-          </div>
-          <div class="my-1">
-            <div class="text-2xl font-black text-white" id="driver-name-display">PM2.5 (FINE PARTICLES)</div>
-            <div class="text-xs text-slate-300 mt-1">
-              CURRENT: <strong class="text-white text-sm" id="driver-val-display">--.- µg/m³</strong>
-              <span class="text-slate-400">(SAFE CEILING: <span id="driver-limit-display">60.0</span>)</span>
-            </div>
-          </div>
-          <div class="border-t border-termBorder pt-2 flex justify-between text-[11px]">
-            <span class="text-slate-400">REGULATORY MULTIPLE:</span>
-            <span id="driver-multiple-display" class="font-bold text-white">---% OF STATUTORY LIMIT</span>
-          </div>
-        </div>
-
-        <!-- CARD 3: ML MODEL INTELLIGENCE VS BASELINE RULE -->
-        <div class="flat-panel p-4 flex flex-col justify-between">
-          <div class="flex justify-between items-start">
-            <span class="text-slate-400 font-bold text-xs uppercase">MACHINE LEARNING DECISION</span>
-            <span class="text-[10px] text-emerald-400 font-bold border border-emerald-500/40 px-1.5 py-0.5">CHAMPION MODEL</span>
-          </div>
-          <div class="space-y-1.5 my-1 text-xs">
-            <div class="flex justify-between">
-              <span class="text-slate-400">RANDOM FOREST ML:</span>
-              <span id="stat-ml-decision" class="font-bold text-white">---</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-slate-400">PERSISTENCE HEURISTIC:</span>
-              <span id="stat-baseline-decision" class="font-bold text-white">---</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-slate-400">MODEL RMSE ERROR:</span>
-              <span class="font-bold text-emerald-400">32.96 (-21.5% VS RULE)</span>
-            </div>
-          </div>
-          <div class="border-t border-termBorder pt-2 flex justify-between text-[11px] text-slate-400">
-            <span>UNHEALTHY THRESHOLD:</span>
-            <span class="text-amber-400 font-bold">AQI &gt; 100.0</span>
-          </div>
-        </div>
-
+      <!-- Current Status & Timestamp -->
+      <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 self-end md:self-center shrink-0">
+        <span class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="font-medium">Model Active: Random Forest (89.6% Acc)</span>
+        </span>
       </div>
 
-      <!-- MAIN 2-COLUMN WORKSPACE: SENSORS (LEFT) & PREDICTIVE TIMELINE (RIGHT) -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start font-mono">
-        
-        <!-- LEFT COLUMN: CLEAR PARAMETER STUDIO (5 COLS) -->
-        <div class="lg:col-span-5 flat-panel p-4 space-y-4">
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 3. MAIN DASHBOARD CONTENT                                                 -->
+  <!-- ========================================================================= -->
+  <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-5 space-y-5">
+
+    <!-- VIEW 1: DASHBOARD VIEW -->
+    <div id="view-dashboard" class="space-y-5">
+      
+      <!-- HERO BANNER: 24H FORECAST SUMMARY -->
+      <div id="forecast-hero-card" class="rounded-xl border p-5 transition-all shadow-sm bg-white dark:bg-appDarkCard border-slate-200 dark:border-appDarkBorder">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
           
-          <div class="flex items-center justify-between pb-2 border-b border-termBorder">
-            <div>
-              <span class="text-sky-400 font-bold text-xs uppercase flex items-center gap-1.5">
-                <i data-lucide="sliders" class="w-3.5 h-3.5"></i> SENSOR TELEMETRY CONTROLS
-              </span>
-              <span class="text-[10px] text-slate-500 block">Move sliders to calculate next-day forecast</span>
+          <!-- Tomorrow's Main AQI Score -->
+          <div class="lg:col-span-5 flex items-center gap-5 border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-appDarkBorder pb-4 lg:pb-0 lg:pr-5">
+            <div id="aqi-display-badge" class="w-24 h-24 rounded-2xl flex flex-col items-center justify-center shrink-0 text-white font-bold shadow-sm transition-all" style="background-color: #f59e0b;">
+              <span class="text-[10px] uppercase font-semibold tracking-wider opacity-90">Tomorrow</span>
+              <span id="val-predicted-aqi" class="text-4xl font-extrabold tracking-tight num-font">--</span>
+              <span class="text-[10px] font-medium opacity-90">AQI PTS</span>
             </div>
-            <button onclick="resetDefaults()" class="btn-term text-[10px] py-1 px-2">
-              <i data-lucide="rotate-ccw" class="w-3 h-3"></i> RESET
+            
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <span id="badge-category-name" class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200">
+                  Moderate
+                </span>
+                <span id="badge-alert-status" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300">
+                  ⚠️ Unhealthy Alert
+                </span>
+              </div>
+              <h2 id="hero-headline" class="text-base font-bold text-slate-900 dark:text-white">
+                Air quality will be moderate tomorrow
+              </h2>
+              <p id="hero-delta-text" class="text-xs text-slate-500 dark:text-slate-400">
+                Comparing against today's readings...
+              </p>
+            </div>
+          </div>
+
+          <!-- Primary Cause & Model Confidence -->
+          <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            
+            <!-- Primary Pollutant Driver -->
+            <div class="p-3.5 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/80 dark:border-appDarkBorder">
+              <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-1">
+                <span class="font-medium flex items-center gap-1.5">
+                  <i data-lucide="alert-circle" class="w-3.5 h-3.5 text-amber-500"></i> Main Pollutant Driver
+                </span>
+                <span id="driver-status-badge" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300">
+                  Exceeded
+                </span>
+              </div>
+              <div class="text-base font-bold text-slate-900 dark:text-white" id="val-driver-name">
+                PM2.5 (Fine Dust)
+              </div>
+              <div class="text-xs text-slate-600 dark:text-slate-300 mt-0.5 flex items-baseline justify-between">
+                <span>Current: <strong id="val-driver-val" class="num-font text-slate-900 dark:text-white">65.0 µg/m³</strong></span>
+                <span class="text-[11px] text-slate-400">Safe: <span id="val-driver-safe">60.0 µg/m³</span></span>
+              </div>
+            </div>
+
+            <!-- Model Verification & Confidence -->
+            <div class="p-3.5 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/80 dark:border-appDarkBorder">
+              <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-1">
+                <span class="font-medium flex items-center gap-1.5">
+                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-500"></i> ML Confidence
+                </span>
+                <span class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">Random Forest</span>
+              </div>
+              <div class="text-base font-bold text-slate-900 dark:text-white flex items-baseline gap-1.5">
+                <span id="val-confidence-pct" class="num-font">89.6%</span>
+                <span class="text-xs font-normal text-slate-500 dark:text-slate-400">probability score</span>
+              </div>
+              <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                RMSE error: <strong class="text-slate-700 dark:text-slate-200 num-font">32.96</strong> (21.5% better than today's rule)
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- MAIN 2-COLUMN SECTION: INPUTS (LEFT) & TIMELINE + GUIDELINES (RIGHT) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        
+        <!-- =================================================================== -->
+        <!-- LEFT COLUMN: SENSOR INPUTS (5 COLS)                                -->
+        <!-- =================================================================== -->
+        <div class="lg:col-span-5 bg-white dark:bg-appDarkCard border border-slate-200 dark:border-appDarkBorder rounded-xl p-5 space-y-4 shadow-sm">
+          
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-appDarkBorder">
+            <div>
+              <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <i data-lucide="sliders-horizontal" class="w-4 h-4 text-sky-500"></i>
+                Today's Air Readings
+              </h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Adjust values to see tomorrow's forecast update in real-time</p>
+            </div>
+            <button onclick="resetDefaults()" class="px-2.5 py-1 text-xs rounded-md bg-slate-100 dark:bg-appDarkCardSub text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 font-medium transition-all" title="Reset to default scenario">
+              Reset
             </button>
           </div>
 
-          <!-- PRIMARY DRIVERS -->
-          <div class="space-y-3">
+          <!-- PRIMARY SLIDERS -->
+          <div class="space-y-4">
             
-            <!-- PARAM 1: TODAY AQI -->
-            <div class="flat-panel-sub p-3">
-              <div class="flex justify-between items-center text-xs">
-                <span class="font-bold text-slate-200">TODAY'S CURRENT AQI</span>
-                <input type="number" id="in-aqi" min="5" max="500" value="138" class="w-16 px-1.5 py-0.5 text-right bg-termBg border border-termBorder text-white font-bold font-mono">
+            <!-- 1. TODAY'S AQI -->
+            <div class="p-3 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/60 dark:border-appDarkBorder">
+              <div class="flex justify-between items-center mb-1">
+                <div>
+                  <label for="in-aqi" class="font-semibold text-slate-800 dark:text-slate-200 text-xs">Today's Current AQI</label>
+                  <span class="text-[11px] text-slate-400 block">Overall air quality index for today</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <input type="number" id="in-aqi" min="5" max="500" value="138" class="w-16 px-2 py-1 text-right rounded-md bg-white dark:bg-appDarkBg border border-slate-300 dark:border-appDarkBorder font-bold num-font text-slate-900 dark:text-white text-xs">
+                  <span class="text-xs text-slate-500">AQI</span>
+                </div>
               </div>
               <input type="range" id="rng-aqi" min="5" max="500" value="138">
-              <div class="flex justify-between text-[10px] text-slate-500">
+              <div class="flex justify-between text-[10px] text-slate-400 font-medium">
                 <span>0 (Good)</span>
-                <span class="text-amber-400 font-bold">100 (Unhealthy Threshold)</span>
+                <span class="text-amber-500 font-semibold">100 (Unhealthy Threshold)</span>
                 <span>500 (Severe)</span>
               </div>
             </div>
 
-            <!-- PARAM 2: PREVIOUS AQI -->
-            <div class="flat-panel-sub p-3">
-              <div class="flex justify-between items-center text-xs">
-                <span class="font-bold text-slate-200">YESTERDAY'S AQI (LAG)</span>
-                <input type="number" id="in-prev-aqi" min="5" max="500" value="125" class="w-16 px-1.5 py-0.5 text-right bg-termBg border border-termBorder text-white font-bold font-mono">
+            <!-- 2. YESTERDAY'S AQI (LAG) -->
+            <div class="p-3 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/60 dark:border-appDarkBorder">
+              <div class="flex justify-between items-center mb-1">
+                <div>
+                  <label for="in-prev-aqi" class="font-semibold text-slate-800 dark:text-slate-200 text-xs">Yesterday's AQI (Trend)</label>
+                  <span class="text-[11px] text-slate-400 block">Past 24-hour baseline memory</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <input type="number" id="in-prev-aqi" min="5" max="500" value="125" class="w-16 px-2 py-1 text-right rounded-md bg-white dark:bg-appDarkBg border border-slate-300 dark:border-appDarkBorder font-bold num-font text-slate-900 dark:text-white text-xs">
+                  <span class="text-xs text-slate-500">AQI</span>
+                </div>
               </div>
               <input type="range" id="rng-prev-aqi" min="5" max="500" value="125">
-              <div class="flex justify-between text-[10px] text-slate-500">
-                <span>0</span>
-                <span>Temporal Autoregressive Feature</span>
-                <span>500</span>
+              <div class="flex justify-between text-[10px] text-slate-400 font-medium">
+                <span>Previous day inertia</span>
+                <span id="prev-aqi-indicator" class="text-slate-500">Lag correlation</span>
               </div>
             </div>
 
-            <!-- PARAM 3: PM2.5 -->
-            <div class="flat-panel-sub p-3">
-              <div class="flex justify-between items-center text-xs">
+            <!-- 3. PM2.5 (FINE PARTICULATES) -->
+            <div class="p-3 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/60 dark:border-appDarkBorder">
+              <div class="flex justify-between items-center mb-1">
                 <div>
-                  <span class="font-bold text-slate-200">PM2.5 (FINE PARTICLES)</span>
-                  <span class="text-[10px] text-slate-400 block">NAAQS 24h Safe Limit: 60 µg/m³</span>
+                  <label for="in-pm25" class="font-semibold text-slate-800 dark:text-slate-200 text-xs">PM2.5 (Fine Dust / Smoke)</label>
+                  <span class="text-[11px] text-slate-400 block">Safe 24h limit: 60.0 µg/m³</span>
                 </div>
-                <div class="flex items-center gap-1">
-                  <input type="number" id="in-pm25" step="0.5" min="1" max="450" value="65.0" class="w-16 px-1.5 py-0.5 text-right bg-termBg border border-termBorder text-white font-bold font-mono">
-                  <span class="text-[10px] text-slate-400">µg/m³</span>
+                <div class="flex items-center gap-1.5">
+                  <input type="number" id="in-pm25" step="0.5" min="1" max="450" value="65.0" class="w-16 px-2 py-1 text-right rounded-md bg-white dark:bg-appDarkBg border border-slate-300 dark:border-appDarkBorder font-bold num-font text-slate-900 dark:text-white text-xs">
+                  <span class="text-xs text-slate-500">µg/m³</span>
                 </div>
               </div>
               <input type="range" id="rng-pm25" min="1" max="450" step="0.5" value="65.0">
             </div>
 
-            <!-- PARAM 4: NO2 -->
-            <div class="flat-panel-sub p-3">
-              <div class="flex justify-between items-center text-xs">
+            <!-- 4. NO2 (NITROGEN DIOXIDE) -->
+            <div class="p-3 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/60 dark:border-appDarkBorder">
+              <div class="flex justify-between items-center mb-1">
                 <div>
-                  <span class="font-bold text-slate-200">NO2 (NITROGEN DIOXIDE)</span>
-                  <span class="text-[10px] text-slate-400 block">NAAQS 24h Safe Limit: 80 µg/m³</span>
+                  <label for="in-no2" class="font-semibold text-slate-800 dark:text-slate-200 text-xs">NO2 (Vehicle Exhaust)</label>
+                  <span class="text-[11px] text-slate-400 block">Safe 24h limit: 80.0 µg/m³</span>
                 </div>
-                <div class="flex items-center gap-1">
-                  <input type="number" id="in-no2" step="0.5" min="1" max="250" value="42.0" class="w-16 px-1.5 py-0.5 text-right bg-termBg border border-termBorder text-white font-bold font-mono">
-                  <span class="text-[10px] text-slate-400">µg/m³</span>
+                <div class="flex items-center gap-1.5">
+                  <input type="number" id="in-no2" step="0.5" min="1" max="250" value="42.0" class="w-16 px-2 py-1 text-right rounded-md bg-white dark:bg-appDarkBg border border-slate-300 dark:border-appDarkBorder font-bold num-font text-slate-900 dark:text-white text-xs">
+                  <span class="text-xs text-slate-500">µg/m³</span>
                 </div>
               </div>
               <input type="range" id="rng-no2" min="1" max="250" step="0.5" value="42.0">
             </div>
 
-            <!-- PARAM 5: CO -->
-            <div class="flat-panel-sub p-3">
-              <div class="flex justify-between items-center text-xs">
+            <!-- 5. CO (CARBON MONOXIDE) -->
+            <div class="p-3 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/60 dark:border-appDarkBorder">
+              <div class="flex justify-between items-center mb-1">
                 <div>
-                  <span class="font-bold text-slate-200">CO (CARBON MONOXIDE)</span>
-                  <span class="text-[10px] text-slate-400 block">NAAQS 8h Safe Limit: 2.0 mg/m³</span>
+                  <label for="in-co" class="font-semibold text-slate-800 dark:text-slate-200 text-xs">CO (Carbon Monoxide)</label>
+                  <span class="text-[11px] text-slate-400 block">Safe 8h limit: 2.0 mg/m³</span>
                 </div>
-                <div class="flex items-center gap-1">
-                  <input type="number" id="in-co" step="0.05" min="0.05" max="15.0" value="1.30" class="w-16 px-1.5 py-0.5 text-right bg-termBg border border-termBorder text-white font-bold font-mono">
-                  <span class="text-[10px] text-slate-400">mg/m³</span>
+                <div class="flex items-center gap-1.5">
+                  <input type="number" id="in-co" step="0.05" min="0.05" max="15.0" value="1.30" class="w-16 px-2 py-1 text-right rounded-md bg-white dark:bg-appDarkBg border border-slate-300 dark:border-appDarkBorder font-bold num-font text-slate-900 dark:text-white text-xs">
+                  <span class="text-xs text-slate-500">mg/m³</span>
                 </div>
               </div>
               <input type="range" id="rng-co" min="0.05" max="15.0" step="0.05" value="1.30">
@@ -440,46 +396,52 @@
 
           </div>
 
-          <!-- SECONDARY POLLUTANTS ACCORDION -->
-          <div class="border-t border-termBorder pt-3">
-            <button onclick="toggleSecondaryAccordion()" class="w-full flex items-center justify-between text-xs font-bold text-slate-300 hover:text-white py-1">
+          <!-- COLLAPSIBLE: ADDITIONAL CHEMICALS & SEASON -->
+          <div class="pt-2 border-t border-slate-200 dark:border-appDarkBorder">
+            <button onclick="toggleSecondaryAccordion()" class="w-full flex items-center justify-between text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white py-1 transition-all">
               <span class="flex items-center gap-1.5">
-                <i data-lucide="layers" class="w-3.5 h-3.5 text-sky-400"></i> ADVANCED SENSORS & SEASONALITY
+                <i data-lucide="layers" class="w-3.5 h-3.5 text-sky-500"></i> Additional Pollutants & Season
               </span>
-              <span id="accordion-indicator" class="text-slate-500 font-mono">[ + EXPAND ]</span>
+              <span id="accordion-indicator" class="text-xs text-slate-400 font-normal">Show More +</span>
             </button>
 
-            <div id="secondary-panel" class="hidden mt-3 space-y-2.5">
-              
-              <div class="grid grid-cols-2 gap-2">
-                <div class="flat-panel-sub p-2">
-                  <label class="text-[10px] text-slate-400 block">PM10 (µg/m³)</label>
-                  <input type="number" id="in-pm10" value="115.0" class="w-full mt-1 px-1.5 py-0.5 bg-termBg border border-termBorder text-white text-xs">
+            <div id="secondary-panel" class="hidden mt-3 space-y-3 pt-2">
+              <div class="grid grid-cols-2 gap-3">
+                <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/60 dark:border-appDarkBorder">
+                  <label for="in-pm10" class="text-[11px] font-medium text-slate-500 dark:text-slate-400 block">PM10 (Coarse Dust)</label>
+                  <div class="flex items-center gap-1 mt-1">
+                    <input type="number" id="in-pm10" value="115.0" class="w-full px-2 py-1 rounded bg-white dark:bg-appDarkBg border border-slate-300 dark:border-appDarkBorder text-xs num-font text-slate-800 dark:text-slate-200">
+                    <span class="text-[10px] text-slate-400">µg/m³</span>
+                  </div>
                 </div>
-                <div class="flat-panel-sub p-2">
-                  <label class="text-[10px] text-slate-400 block">SO2 (µg/m³)</label>
-                  <input type="number" id="in-so2" value="14.5" class="w-full mt-1 px-1.5 py-0.5 bg-termBg border border-termBorder text-white text-xs">
+                <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/60 dark:border-appDarkBorder">
+                  <label for="in-so2" class="text-[11px] font-medium text-slate-500 dark:text-slate-400 block">SO2 (Sulfur Dioxide)</label>
+                  <div class="flex items-center gap-1 mt-1">
+                    <input type="number" id="in-so2" value="14.5" class="w-full px-2 py-1 rounded bg-white dark:bg-appDarkBg border border-slate-300 dark:border-appDarkBorder text-xs num-font text-slate-800 dark:text-slate-200">
+                    <span class="text-[10px] text-slate-400">µg/m³</span>
+                  </div>
                 </div>
               </div>
 
-              <div class="flat-panel-sub p-2">
+              <!-- Month Selection -->
+              <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/60 dark:border-appDarkBorder">
                 <div class="flex justify-between items-center mb-1">
-                  <label class="text-[10px] text-slate-400">CALENDAR MONTH (INVERSION FACTOR)</label>
-                  <span id="month-inversion-badge" class="text-[9px] px-1 bg-red-600 text-white font-bold">WINTER INVERSION</span>
+                  <label for="in-month" class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Calendar Month (Seasonal Inversion)</label>
+                  <span id="month-inversion-badge" class="text-[10px] px-1.5 py-0.5 rounded font-semibold bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300">Winter Inversion</span>
                 </div>
-                <select id="in-month" onchange="onParameterScrub()" class="w-full px-2 py-1 bg-termBg border border-termBorder text-white text-xs">
-                  <option value="1">01 - JANUARY [WINTER INVERSION]</option>
-                  <option value="2">02 - FEBRUARY [WINTER INVERSION]</option>
-                  <option value="3">03 - MARCH [SPRING]</option>
-                  <option value="4">04 - APRIL [SUMMER]</option>
-                  <option value="5">05 - MAY [PRE-MONSOON]</option>
-                  <option value="6">06 - JUNE [MONSOON]</option>
-                  <option value="7">07 - JULY [MONSOON]</option>
-                  <option value="8">08 - AUGUST [MONSOON]</option>
-                  <option value="9">09 - SEPTEMBER [POST-MONSOON]</option>
-                  <option value="10">10 - OCTOBER [AUTUMN]</option>
-                  <option value="11" selected>11 - NOVEMBER [WINTER INVERSION]</option>
-                  <option value="12">12 - DECEMBER [WINTER INVERSION]</option>
+                <select id="in-month" onchange="onParameterScrub()" class="w-full mt-1 px-2.5 py-1.5 rounded-md bg-white dark:bg-appDarkBg border border-slate-300 dark:border-appDarkBorder text-xs text-slate-800 dark:text-slate-200 font-medium">
+                  <option value="1">January (Winter Inversion)</option>
+                  <option value="2">February (Winter Inversion)</option>
+                  <option value="3">March (Spring)</option>
+                  <option value="4">April (Summer)</option>
+                  <option value="5">May (Pre-Monsoon)</option>
+                  <option value="6">June (Monsoon)</option>
+                  <option value="7">July (Monsoon)</option>
+                  <option value="8">August (Monsoon)</option>
+                  <option value="9">September (Post-Monsoon)</option>
+                  <option value="10">October (Autumn)</option>
+                  <option value="11" selected>November (Winter Inversion)</option>
+                  <option value="12">December (Winter Inversion)</option>
                 </select>
               </div>
 
@@ -488,88 +450,140 @@
 
         </div>
 
-        <!-- RIGHT COLUMN: SYNCHRONIZED TIMELINE & PROTOCOLS (7 COLS) -->
-        <div class="lg:col-span-7 space-y-4">
+        <!-- =================================================================== -->
+        <!-- RIGHT COLUMN: 24H FORECAST TIMELINE & ACTION DIRECTIVES (7 COLS)    -->
+        <!-- =================================================================== -->
+        <div class="lg:col-span-7 space-y-5">
           
-          <!-- SYNCHRONIZED TIMELINE CHART -->
-          <div class="flat-panel p-4">
+          <!-- 24-HOUR FORECAST TIMELINE CHART -->
+          <div class="bg-white dark:bg-appDarkCard border border-slate-200 dark:border-appDarkBorder rounded-xl p-5 shadow-sm space-y-3">
             
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-2 mb-2 border-b border-termBorder gap-2">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-200 dark:border-appDarkBorder">
               <div>
-                <span class="text-sky-400 font-bold text-xs uppercase flex items-center gap-1.5">
-                  <i data-lucide="line-chart" class="w-3.5 h-3.5"></i> 24-HOUR STEP FORECAST TRAJECTORY
-                </span>
-                <span class="text-[10px] text-slate-500 block">Move mouse to inspect exact hourly values</span>
+                <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <i data-lucide="line-chart" class="w-4 h-4 text-sky-500"></i>
+                  24-Hour Forecast Timeline
+                </h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Hourly trajectory from current readings to tomorrow's predicted AQI</p>
               </div>
-              
-              <!-- Fixed Crosshair HUD Readout -->
-              <div id="crosshair-hud" class="text-[11px] bg-termBg px-2 py-1 border border-termBorder flex items-center gap-2.5">
-                <span>OFFSET: <strong id="hud-offset" class="text-white">+12h</strong></span>
-                <span>TIME: <strong id="hud-time" class="text-sky-400">--:00 UTC</strong></span>
-                <span>AQI: <strong id="hud-aqi" class="text-white">---</strong></span>
-                <span>PM2.5: <strong id="hud-pm25" class="text-amber-400">--.-</strong></span>
+
+              <!-- Interactive Hover Badge -->
+              <div id="chart-scrub-tooltip" class="text-xs px-2.5 py-1 rounded-md bg-slate-100 dark:bg-appDarkCardSub border border-slate-200 dark:border-appDarkBorder flex items-center gap-2 font-medium">
+                <span class="text-slate-500">Offset: <strong id="hud-offset" class="text-slate-800 dark:text-slate-200 num-font">+12h</strong></span>
+                <span class="text-slate-300 dark:text-slate-600">|</span>
+                <span class="text-slate-500">AQI: <strong id="hud-aqi" class="text-sky-600 dark:text-sky-400 num-font font-bold">---</strong></span>
+                <span class="text-slate-300 dark:text-slate-600">|</span>
+                <span class="text-slate-500">PM2.5: <strong id="hud-pm25" class="text-amber-600 dark:text-amber-400 num-font">--.-</strong></span>
               </div>
             </div>
 
-            <!-- Canvas Container with Rigid Crosshair Line -->
-            <div id="charts-wrapper" class="relative select-none border border-termBorder bg-termBg p-2 space-y-2" onmousemove="onChartMouseMove(event)">
-              <div id="chart-crosshair" class="crosshair-line"></div>
+            <!-- Canvas Container -->
+            <div class="relative bg-slate-50 dark:bg-appDarkBg rounded-lg p-3 border border-slate-200/80 dark:border-appDarkBorder overflow-hidden select-none" id="chart-wrapper" onmousemove="onChartMouseMove(event)" onmouseleave="onChartMouseLeave()">
+              
+              <!-- Crosshair Line -->
+              <div id="chart-crosshair" class="absolute top-0 bottom-0 w-px bg-sky-500/80 pointer-events-none hidden z-20"></div>
 
-              <!-- TIMELINE 1: AQI -->
-              <div class="h-32 relative">
-                <div class="absolute top-1 left-2 text-[10px] font-bold text-slate-400 z-10 flex items-center gap-2">
-                  <span class="text-sky-400">[AXIS-A] 24H PREDICTED AQI STEP-CURVE</span>
-                  <span class="text-[9px] px-1 bg-red-600 text-white font-bold">100.0 UNHEALTHY LINE</span>
+              <!-- Chart Legend -->
+              <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 mb-2 px-1">
+                <div class="flex items-center gap-4">
+                  <span class="flex items-center gap-1.5 font-medium">
+                    <span class="w-3 h-0.5 bg-sky-500 rounded"></span> Predicted AQI
+                  </span>
+                  <span class="flex items-center gap-1.5 font-medium">
+                    <span class="w-3 h-0.5 border-t border-dashed border-red-500"></span> Unhealthy Threshold (100 AQI)
+                  </span>
                 </div>
+                <span class="text-[10px] text-slate-400">Hover across chart to inspect</span>
+              </div>
+
+              <!-- Canvas element -->
+              <div class="h-44 w-full relative">
                 <canvas id="canvas-aqi" class="w-full h-full block"></canvas>
               </div>
 
-              <!-- TIMELINE 2: PM2.5 -->
-              <div class="h-24 relative border-t border-termBorder pt-1">
-                <div class="absolute top-2 left-2 text-[10px] font-bold text-slate-400 z-10 flex items-center gap-2">
-                  <span class="text-amber-400">[AXIS-B] PM2.5 CONCENTRATION (µg/m³)</span>
-                  <span class="text-[9px] text-slate-400">NAAQS LIMIT: 60.0</span>
-                </div>
-                <canvas id="canvas-pm25" class="w-full h-full block"></canvas>
+              <!-- Hourly X-Axis Labels -->
+              <div id="timeline-x-labels" class="flex justify-between text-[10px] text-slate-500 dark:text-slate-400 pt-2 px-1 border-t border-slate-200 dark:border-appDarkBorder">
+                <span>Now (T+0h)</span>
+                <span>+6h</span>
+                <span>+12h (Midday)</span>
+                <span>+18h (Evening)</span>
+                <span>+24h (Tomorrow)</span>
               </div>
 
-              <!-- X-Axis Timeline Markers -->
-              <div id="timeline-x-labels" class="h-5 flex justify-between text-[9px] text-slate-500 px-1 pt-1 border-t border-termBorder">
-                <!-- Injected via JS -->
-              </div>
             </div>
 
           </div>
 
-          <!-- ACTIONABLE STATUTORY ADVISORIES -->
-          <div class="flat-panel p-4">
-            <div class="flex items-center justify-between pb-2 mb-2 border-b border-termBorder font-mono">
-              <span class="text-sky-400 font-bold text-xs uppercase flex items-center gap-1.5">
-                <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i> PRE-EMPTIVE HEALTH & OPERATIONAL ADVISORIES
+          <!-- ACTIONABLE GUIDELINES & DIRECTIVES -->
+          <div class="bg-white dark:bg-appDarkCard border border-slate-200 dark:border-appDarkBorder rounded-xl p-5 shadow-sm space-y-3">
+            
+            <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-appDarkBorder">
+              <div>
+                <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <i data-lucide="shield-check" class="w-4 h-4 text-emerald-500"></i>
+                  Recommended Actions & Early Warning Guidance
+                </h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Pre-emptive measures to take before tomorrow's air shifts</p>
+              </div>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-appDarkCardSub text-slate-600 dark:text-slate-300 font-medium">
+                24h Advance Notice
               </span>
-              <span class="text-[10px] text-slate-500">24H ADVANCE NOTICE</span>
             </div>
 
-            <div class="space-y-2">
-              <div class="flat-panel-sub p-2.5 flex items-start gap-2.5">
-                <span class="px-1.5 py-0.5 bg-blue-600 text-white font-bold text-[10px] shrink-0">SCHOOLS</span>
-                <p id="adv-schools" class="text-xs text-slate-200 leading-relaxed">Loading directive...</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              
+              <!-- 1. Schools & Children -->
+              <div class="p-3 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/70 dark:border-appDarkBorder flex gap-3">
+                <div class="w-7 h-7 rounded-md bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 flex items-center justify-center shrink-0 mt-0.5">
+                  <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs font-bold text-slate-900 dark:text-white">Schools & Children</h4>
+                  <p id="adv-schools" class="text-xs text-slate-600 dark:text-slate-300 mt-0.5 leading-relaxed">
+                    Loading recommendation...
+                  </p>
+                </div>
               </div>
 
-              <div class="flat-panel-sub p-2.5 flex items-start gap-2.5">
-                <span class="px-1.5 py-0.5 bg-amber-600 text-white font-bold text-[10px] shrink-0">CLINICAL</span>
-                <p id="adv-sensitive" class="text-xs text-slate-200 leading-relaxed">Loading directive...</p>
+              <!-- 2. Sensitive Groups -->
+              <div class="p-3 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/70 dark:border-appDarkBorder flex gap-3">
+                <div class="w-7 h-7 rounded-md bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 flex items-center justify-center shrink-0 mt-0.5">
+                  <i data-lucide="heart-pulse" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs font-bold text-slate-900 dark:text-white">Sensitive & Elderly</h4>
+                  <p id="adv-sensitive" class="text-xs text-slate-600 dark:text-slate-300 mt-0.5 leading-relaxed">
+                    Loading recommendation...
+                  </p>
+                </div>
               </div>
 
-              <div class="flat-panel-sub p-2.5 flex items-start gap-2.5">
-                <span class="px-1.5 py-0.5 bg-purple-600 text-white font-bold text-[10px] shrink-0">TRANSIT</span>
-                <p id="adv-commuters" class="text-xs text-slate-200 leading-relaxed">Loading directive...</p>
+              <!-- 3. Commuters & Transit -->
+              <div class="p-3 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/70 dark:border-appDarkBorder flex gap-3">
+                <div class="w-7 h-7 rounded-md bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 flex items-center justify-center shrink-0 mt-0.5">
+                  <i data-lucide="bike" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs font-bold text-slate-900 dark:text-white">Commute & Outdoor Work</h4>
+                  <p id="adv-commuters" class="text-xs text-slate-600 dark:text-slate-300 mt-0.5 leading-relaxed">
+                    Loading recommendation...
+                  </p>
+                </div>
               </div>
 
-              <div class="flat-panel-sub p-2.5 flex items-start gap-2.5">
-                <span class="px-1.5 py-0.5 bg-teal-600 text-white font-bold text-[10px] shrink-0">HVAC</span>
-                <p id="adv-indoor" class="text-xs text-slate-200 leading-relaxed">Loading directive...</p>
+              <!-- 4. Indoor & Buildings -->
+              <div class="p-3 rounded-lg bg-slate-50 dark:bg-appDarkCardSub border border-slate-200/70 dark:border-appDarkBorder flex gap-3">
+                <div class="w-7 h-7 rounded-md bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300 flex items-center justify-center shrink-0 mt-0.5">
+                  <i data-lucide="air-vent" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs font-bold text-slate-900 dark:text-white">Indoor Air & Ventilation</h4>
+                  <p id="adv-indoor" class="text-xs text-slate-600 dark:text-slate-300 mt-0.5 leading-relaxed">
+                    Loading recommendation...
+                  </p>
+                </div>
               </div>
+
             </div>
 
           </div>
@@ -578,80 +592,99 @@
 
       </div>
 
-      <!-- COLLAPSIBLE SECTION: 7-MODEL BENCHMARK MATRIX (PLACED AT BOTTOM) -->
-      <div class="flat-panel p-4 font-mono">
-        <button onclick="toggleBenchmarks()" class="w-full flex items-center justify-between text-xs font-bold text-slate-300 hover:text-white py-1">
-          <span class="flex items-center gap-1.5">
-            <i data-lucide="award" class="w-3.5 h-3.5 text-emerald-400"></i> MODEL BENCHMARKS (7 ARCHITECTURES EVALUATED ON 4,408 DAYS)
+      <!-- COLLAPSIBLE: MODEL BENCHMARK EVALUATION (HONEST, TRANSPARENT STATS) -->
+      <div class="bg-white dark:bg-appDarkCard border border-slate-200 dark:border-appDarkBorder rounded-xl p-4 shadow-sm">
+        <button onclick="toggleBenchmarks()" class="w-full flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white py-1 transition-all">
+          <span class="flex items-center gap-2">
+            <i data-lucide="award" class="w-4 h-4 text-emerald-500"></i>
+            Model Benchmarks & Scientific Validation (Tested across 4,408 days)
           </span>
-          <span id="benchmarks-toggle-indicator" class="text-slate-500">[ + EXPAND BENCHMARKS ]</span>
+          <span id="benchmarks-toggle-indicator" class="text-xs text-slate-400 font-normal">View 7-Model Evaluation Matrix +</span>
         </button>
 
-        <div id="benchmarks-panel" class="hidden mt-3 pt-3 border-t border-termBorder">
+        <div id="benchmarks-panel" class="hidden mt-3 pt-3 border-t border-slate-200 dark:border-appDarkBorder space-y-3">
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-[11px]">
-              <thead class="bg-termBg text-slate-400 border-b border-termBorder">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 dark:bg-appDarkBg text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-appDarkBorder font-semibold">
                 <tr>
-                  <th class="p-2">MODEL ARCHITECTURE</th>
-                  <th class="p-2">FAMILY</th>
-                  <th class="p-2">ACCURACY</th>
-                  <th class="p-2">F1 SCORE</th>
-                  <th class="p-2">ROC-AUC</th>
-                  <th class="p-2">VERDICT</th>
+                  <th class="p-2.5">Model Architecture</th>
+                  <th class="p-2.5">Algorithm Family</th>
+                  <th class="p-2.5">Accuracy</th>
+                  <th class="p-2.5">F1 Score</th>
+                  <th class="p-2.5">ROC-AUC</th>
+                  <th class="p-2.5">Status</th>
                 </tr>
               </thead>
-              <tbody id="benchmark-tbody" class="divide-y divide-termBorder">
+              <tbody id="benchmark-tbody" class="divide-y divide-slate-100 dark:divide-appDarkBorder text-slate-700 dark:text-slate-300">
                 <!-- Injected via JS -->
               </tbody>
             </table>
+          </div>
+          <div class="text-[11px] text-slate-500 dark:text-slate-400 flex flex-col sm:flex-row justify-between pt-1">
+            <span>• Regression Error: Random Forest RMSE 32.96 vs 41.96 for today's persistence rule (-21.5% error).</span>
+            <span>• External Station Test: 74,402 unseen readings verified with 0.9385 F1.</span>
           </div>
         </div>
       </div>
 
     </div>
 
-    <!-- ===================================================================== -->
-    <!-- VIEW 2: RAW CSV DATA TABLE VIEW (PINNED HEADERS & EXPORT)             -->
-    <!-- ===================================================================== -->
-    <div id="view-table" class="hidden space-y-3 font-mono">
-      
-      <div class="flat-panel p-3 flex items-center justify-between">
+    <!-- VIEW 2: HOURLY DATA TABLE VIEW -->
+    <div id="view-table" class="hidden space-y-4">
+      <div class="bg-white dark:bg-appDarkCard border border-slate-200 dark:border-appDarkBorder rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
         <div>
-          <span class="font-bold text-white text-xs">RAW TELEMETRY TIME-SERIES REPOSITORY</span>
-          <span class="text-slate-400 text-[11px] block">PINNED HEADERS // DISCRETE NUMERICAL TABULAR RECORDS</span>
+          <h3 class="font-bold text-slate-900 dark:text-white text-sm">24-Hour Discrete Hourly Records</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Tabular projection of AQI and pollutant concentrations from T+0 to T+24h</p>
         </div>
-        <button onclick="downloadCSV()" class="btn-term active">
-          <i data-lucide="download" class="w-3.5 h-3.5"></i> DOWNLOAD RAW CSV
+        <button onclick="downloadCSV()" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-600 hover:bg-sky-500 text-white shadow-sm flex items-center gap-1.5 self-start sm:self-center">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i> Download CSV File
         </button>
       </div>
 
-      <!-- Scrollable table container with sticky pinned headers -->
-      <div class="flat-panel overflow-y-auto max-h-[75vh] border border-termBorder">
-        <table class="w-full text-left text-[11px] border-collapse">
-          <thead class="sticky-table-header text-slate-300 uppercase tracking-wider text-[10px]">
-            <tr>
-              <th class="p-2.5">INDEX</th>
-              <th class="p-2.5">OFFSET</th>
-              <th class="p-2.5">TIMESTAMP (UTC)</th>
-              <th class="p-2.5 text-right">AQI</th>
-              <th class="p-2.5 text-right">PM2.5 [µg/m³]</th>
-              <th class="p-2.5 text-right">NO2 [µg/m³]</th>
-              <th class="p-2.5 text-right">CO [mg/m³]</th>
-              <th class="p-2.5 text-center">ALERT STATUS</th>
-            </tr>
-          </thead>
-          <tbody id="raw-table-tbody" class="divide-y divide-termBorder text-slate-200">
-            <!-- Injected by JS -->
-          </tbody>
-        </table>
+      <div class="bg-white dark:bg-appDarkCard border border-slate-200 dark:border-appDarkBorder rounded-xl overflow-hidden shadow-sm">
+        <div class="overflow-y-auto max-h-[65vh]">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead class="sticky-th text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-appDarkBorder font-semibold">
+              <tr>
+                <th class="p-3">Offset</th>
+                <th class="p-3">Timestamp (UTC)</th>
+                <th class="p-3 text-right">Forecast AQI</th>
+                <th class="p-3 text-right">PM2.5 (µg/m³)</th>
+                <th class="p-3 text-right">NO2 (µg/m³)</th>
+                <th class="p-3 text-right">CO (mg/m³)</th>
+                <th class="p-3 text-center">Health Status</th>
+              </tr>
+            </thead>
+            <tbody id="raw-table-tbody" class="divide-y divide-slate-100 dark:divide-appDarkBorder text-slate-700 dark:text-slate-300">
+              <!-- Injected by JS -->
+            </tbody>
+          </table>
+        </div>
       </div>
-
     </div>
 
   </main>
 
   <!-- ========================================================================= -->
-  <!-- JAVASCRIPT LOGIC ENGINE                                                   -->
+  <!-- 4. CLEAN FOOTER                                                           -->
+  <!-- ========================================================================= -->
+  <footer class="mt-auto border-t border-slate-200 dark:border-appDarkBorder py-4 px-4 sm:px-6 bg-white dark:bg-appDarkCard text-xs text-slate-500 dark:text-slate-400">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="font-semibold text-slate-700 dark:text-slate-300">AeroCast ML</span>
+        <span>•</span>
+        <span>24h Air Quality Forecasting & Early Warning</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span>Trained on CPCB Air Quality Datasets</span>
+        <span>•</span>
+        <span>CPCB / EPA Air Quality Scale</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================================================= -->
+  <!-- 5. JAVASCRIPT CONTROLLER                                                  -->
   <!-- ========================================================================= -->
   <script>
     let currentData = null;
@@ -661,6 +694,24 @@
     let activePresetId = "traffic_moderate";
 
     const paramIds = ["aqi", "prev-aqi", "pm25", "no2", "co"];
+
+    // EPA Categories definition
+    const EPA_LEVELS = [
+      { name: "Good", min: 0, max: 50, color: "#10b981", badgeBg: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200" },
+      { name: "Satisfactory", min: 51, max: 100, color: "#84cc16", badgeBg: "bg-lime-100 text-lime-800 dark:bg-lime-950 dark:text-lime-200" },
+      { name: "Moderate", min: 101, max: 200, color: "#f59e0b", badgeBg: "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200" },
+      { name: "Poor", min: 201, max: 300, color: "#f97316", badgeBg: "bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-200" },
+      { name: "Very Poor", min: 301, max: 400, color: "#ef4444", badgeBg: "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-200" },
+      { name: "Severe", min: 401, max: 500, color: "#881337", badgeBg: "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-200" }
+    ];
+
+    function getCategoryMeta(aqiVal) {
+      const v = Math.max(0, Math.min(500, Math.round(aqiVal)));
+      for (const level of EPA_LEVELS) {
+        if (v >= level.min && v <= level.max) return level;
+      }
+      return EPA_LEVELS[EPA_LEVELS.length - 1];
+    }
 
     function initInputs() {
       paramIds.forEach(id => {
@@ -691,11 +742,11 @@
       const invBadge = document.getElementById("month-inversion-badge");
       if (invBadge) {
         if ([11, 12, 1, 2].includes(m)) {
-          invBadge.className = "text-[9px] px-1 bg-red-600 text-white font-bold";
-          invBadge.textContent = "WINTER INVERSION";
+          invBadge.className = "text-[10px] px-1.5 py-0.5 rounded font-semibold bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300";
+          invBadge.textContent = "Winter Inversion";
         } else {
-          invBadge.className = "text-[9px] px-1 bg-slate-700 text-slate-300 font-bold";
-          invBadge.textContent = "NORMAL DISPERSION";
+          invBadge.className = "text-[10px] px-1.5 py-0.5 rounded font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300";
+          invBadge.textContent = "Normal Dispersion";
         }
       }
 
@@ -728,77 +779,74 @@
           body: JSON.stringify(payload)
         });
         currentData = await resp.json();
-        renderTerminalTelemetry(currentData);
+        renderDashboard(currentData);
       } catch (err) {
         console.error("Telemetry error:", err);
       }
     }
 
-    function renderTerminalTelemetry(data) {
+    function renderDashboard(data) {
       const pred = data.predicted_aqi;
       const isUnhealthy = data.is_unhealthy;
-      const epa = data.epa_colors;
+      const catMeta = getCategoryMeta(pred);
 
-      // 1. Warning Banner
-      const banner = document.getElementById("hero-warning-banner");
-      const iconBox = document.getElementById("banner-icon-box");
-      const bannerText = document.getElementById("banner-text");
-      const bannerConf = document.getElementById("banner-confidence");
-      
-      bannerText.textContent = data.warning_banner;
-      bannerConf.textContent = `${data.confidence_pct}%`;
-      
+      // 1. Hero Badge & Values
+      const aqiBadge = document.getElementById("aqi-display-badge");
+      aqiBadge.style.backgroundColor = catMeta.color;
+      document.getElementById("val-predicted-aqi").textContent = Math.round(pred);
+
+      const catTag = document.getElementById("badge-category-name");
+      catTag.textContent = catMeta.name;
+      catTag.className = `px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide ${catMeta.badgeBg}`;
+
+      const alertTag = document.getElementById("badge-alert-status");
       if (isUnhealthy) {
-        banner.className = "p-3.5 border font-mono text-xs font-bold flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-red-950 border-red-600 text-white";
-        iconBox.className = "px-2.5 py-1 bg-red-600 text-white font-black text-xs";
-        iconBox.textContent = "[CRITICAL WARNING]";
+        alertTag.className = "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300";
+        alertTag.textContent = "⚠️ Unhealthy Alert (>100)";
       } else {
-        banner.className = "p-3.5 border font-mono text-xs font-bold flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-emerald-950 border-emerald-600 text-white";
-        iconBox.className = "px-2.5 py-1 bg-emerald-500 text-black font-black text-xs";
-        iconBox.textContent = "[NOMINAL / SAFE]";
+        alertTag.className = "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300";
+        alertTag.textContent = "✓ Safe Air Quality (≤100)";
       }
 
-      // 2. Hero Forecast AQI
-      document.getElementById("hero-aqi-value").textContent = Math.round(pred);
-      const catTag = document.getElementById("hero-category-tag");
-      catTag.textContent = data.category.toUpperCase();
-      catTag.style.backgroundColor = epa.bg;
-      catTag.style.color = epa.text;
+      // Hero headline & delta
+      const headline = document.getElementById("hero-headline");
+      const deltaText = document.getElementById("hero-delta-text");
+      const todayAqi = data.current_aqi;
+      const diff = Math.round(pred - todayAqi);
 
-      // Delta
-      const deltaElem = document.getElementById("hero-delta-value");
-      if (data.delta > 0) {
-        deltaElem.innerHTML = `<span class="text-red-400 font-bold">+${data.delta} AQI PTS (DETERIORATING)</span>`;
-      } else if (data.delta < 0) {
-        deltaElem.innerHTML = `<span class="text-emerald-400 font-bold">${data.delta} AQI PTS (IMPROVING)</span>`;
+      if (pred > 100) {
+        headline.textContent = `Warning: Air quality will be ${catMeta.name.toLowerCase()} tomorrow.`;
       } else {
-        deltaElem.innerHTML = `<span class="text-slate-400 font-bold">0.0 PTS (STABLE)</span>`;
+        headline.textContent = `Air quality will remain ${catMeta.name.toLowerCase()} and safe tomorrow.`;
       }
 
-      // 3. Primary Driver
+      if (diff > 0) {
+        deltaText.innerHTML = `Predicted to be <strong class="text-rose-600 dark:text-rose-400 font-semibold">+${diff} AQI pts higher</strong> than today (air quality is worsening).`;
+      } else if (diff < 0) {
+        deltaText.innerHTML = `Predicted to be <strong class="text-emerald-600 dark:text-emerald-400 font-semibold">${diff} AQI pts lower</strong> than today (air quality is improving).`;
+      } else {
+        deltaText.innerHTML = `Predicted to remain stable at around current levels.`;
+      }
+
+      // 2. Primary Driver
       const drv = data.primary_driver;
-      document.getElementById("driver-name-display").textContent = `${drv.pollutant} (${drv.unit})`;
-      document.getElementById("driver-val-display").textContent = `${drv.value} ${drv.unit}`;
-      document.getElementById("driver-limit-display").textContent = `${drv.limit} ${drv.unit}`;
-      document.getElementById("driver-multiple-display").textContent = `${drv.pct_of_limit}% OF STATUTORY LIMIT`;
+      document.getElementById("val-driver-name").textContent = `${drv.pollutant} (${drv.unit})`;
+      document.getElementById("val-driver-val").textContent = `${drv.value} ${drv.unit}`;
+      document.getElementById("val-driver-safe").textContent = `${drv.limit} ${drv.unit}`;
       
-      const drvTag = document.getElementById("driver-status-tag");
+      const drvBadge = document.getElementById("driver-status-badge");
       if (drv.exceeded) {
-        drvTag.className = "px-2 py-0.5 text-[10px] font-bold text-white bg-red-600 uppercase";
-        drvTag.textContent = "CEILING EXCEEDED";
+        drvBadge.className = "px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300";
+        drvBadge.textContent = `${drv.pct_of_limit}% of safe ceiling`;
       } else {
-        drvTag.className = "px-2 py-0.5 text-[10px] font-bold text-black bg-emerald-500 uppercase";
-        drvTag.textContent = "WITHIN BOUNDS";
+        drvBadge.className = "px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300";
+        drvBadge.textContent = "Within safe limit";
       }
 
-      // 4. ML Consensus
-      document.getElementById("stat-ml-decision").textContent = data.champion_says;
-      document.getElementById("stat-ml-decision").className = isUnhealthy ? "font-bold text-red-400" : "font-bold text-emerald-400";
-      
-      document.getElementById("stat-baseline-decision").textContent = data.baseline_says;
-      document.getElementById("stat-baseline-decision").className = data.baseline_says === "UNHEALTHY" ? "font-bold text-red-400" : "font-bold text-emerald-400";
+      // 3. Confidence
+      document.getElementById("val-confidence-pct").textContent = `${data.confidence_pct}%`;
 
-      // 5. Advisories
+      // 4. Action Directives
       if (data.operational_protocols && data.operational_protocols.length >= 4) {
         document.getElementById("adv-schools").textContent = data.operational_protocols[0].instruction;
         document.getElementById("adv-sensitive").textContent = data.operational_protocols[1].instruction;
@@ -806,99 +854,133 @@
         document.getElementById("adv-indoor").textContent = data.operational_protocols[3].instruction;
       }
 
-      // 6. Draw Step Charts
-      drawStepCharts(data.timeline);
+      // 5. Draw Smooth Canvas Timeline
+      drawForecastTimeline(data.timeline);
 
-      // 7. Render Raw Table
-      renderRawTable(data.timeline);
+      // 6. Render Data Table
+      renderTableRows(data.timeline);
     }
 
-    // DRAW STEP CHARTS
-    function drawStepCharts(timeline) {
+    // DRAW CLEAN, SMOOTH FORECAST TIMELINE
+    function drawForecastTimeline(timeline) {
       if (!timeline || timeline.length === 0) return;
-      drawSingleStepCanvas("canvas-aqi", timeline, "aqi", 0, 500, "#38bdf8", 100, "#ef4444");
-      drawSingleStepCanvas("canvas-pm25", timeline, "pm25", 0, 350, "#f59e0b", 60, "#ef4444");
-
-      const xCont = document.getElementById("timeline-x-labels");
-      if (xCont) {
-        xCont.innerHTML = `
-          <span>${timeline[0].display_time} [T+0h]</span>
-          <span>${timeline[6].display_time} [+06h]</span>
-          <span>${timeline[12].display_time} [+12h]</span>
-          <span>${timeline[18].display_time} [+18h]</span>
-          <span>${timeline[24].display_time} [+24h]</span>
-        `;
-      }
-      updateCrosshairHUD(selectedStepIndex);
-    }
-
-    function drawSingleStepCanvas(canvasId, timeline, key, minVal, maxVal, lineColor, threshold, threshColor) {
-      const cvs = document.getElementById(canvasId);
+      const cvs = document.getElementById("canvas-aqi");
       if (!cvs) return;
-      const ctx = cvs.getContext("2d");
+
       const dpr = window.devicePixelRatio || 1;
-      
       const rect = cvs.getBoundingClientRect();
       cvs.width = rect.width * dpr;
       cvs.height = rect.height * dpr;
+
+      const ctx = cvs.getContext("2d");
       ctx.scale(dpr, dpr);
 
       const w = rect.width;
       const h = rect.height;
+      const isDark = document.documentElement.classList.contains("dark");
 
       ctx.clearRect(0, 0, w, h);
 
-      // Grid lines
-      ctx.strokeStyle = "#1e222b";
+      const minVal = 0;
+      const maxVal = Math.max(300, ...timeline.map(t => t.aqi * 1.15));
+
+      // 1. Subtle horizontal grid lines
+      ctx.strokeStyle = isDark ? "#232733" : "#e2e8f0";
       ctx.lineWidth = 1;
-      for (let yPct = 0.25; yPct < 1.0; yPct += 0.25) {
-        ctx.beginPath();
-        ctx.moveTo(0, h * yPct);
-        ctx.lineTo(w, h * yPct);
-        ctx.stroke();
-      }
+      const gridLevels = [50, 100, 200, 300];
+      gridLevels.forEach(lvl => {
+        if (lvl <= maxVal) {
+          const y = h - ((lvl - minVal) / (maxVal - minVal)) * h;
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(w, y);
+          ctx.stroke();
 
-      // Threshold line
-      if (threshold !== undefined) {
-        const threshY = h - ((threshold - minVal) / (maxVal - minVal)) * h;
-        ctx.strokeStyle = threshColor;
-        ctx.lineWidth = 1;
-        ctx.setLineDash([4, 4]);
-        ctx.beginPath();
-        ctx.moveTo(0, threshY);
-        ctx.lineTo(w, threshY);
-        ctx.stroke();
-        ctx.setLineDash([]);
-      }
-
-      // Step-line
-      ctx.strokeStyle = lineColor;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-
-      const n = timeline.length;
-      for (let i = 0; i < n; i++) {
-        const val = timeline[i][key];
-        const x = (i / (n - 1)) * w;
-        const y = h - ((val - minVal) / (maxVal - minVal)) * h;
-
-        if (i === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          const prevVal = timeline[i - 1][key];
-          const prevY = h - ((prevVal - minVal) / (maxVal - minVal)) * h;
-          ctx.lineTo(x, prevY);
-          ctx.lineTo(x, y);
+          // Axis label
+          ctx.fillStyle = isDark ? "#64748b" : "#94a3b8";
+          ctx.font = "10px Inter, sans-serif";
+          ctx.fillText(lvl, 4, y - 3);
         }
-      }
+      });
+
+      // 2. Dashed 100 AQI Threshold Line
+      const threshY = h - ((100 - minVal) / (maxVal - minVal)) * h;
+      ctx.strokeStyle = "#ef4444";
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(0, threshY);
+      ctx.lineTo(w, threshY);
       ctx.stroke();
+      ctx.setLineDash([]);
+
+      // 3. Compute points
+      const n = timeline.length;
+      const points = timeline.map((pt, i) => {
+        const x = (i / (n - 1)) * w;
+        const y = h - ((pt.aqi - minVal) / (maxVal - minVal)) * h;
+        return { x, y, aqi: pt.aqi };
+      });
+
+      // 4. Fill subtle gradient under curve
+      const grad = ctx.createLinearGradient(0, 0, 0, h);
+      if (isDark) {
+        grad.addColorStop(0, "rgba(2, 132, 199, 0.25)");
+        grad.addColorStop(1, "rgba(2, 132, 199, 0.0)");
+      } else {
+        grad.addColorStop(0, "rgba(2, 132, 199, 0.15)");
+        grad.addColorStop(1, "rgba(2, 132, 199, 0.0)");
+      }
+
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 0; i < n - 1; i++) {
+        const xc = (points[i].x + points[i + 1].x) / 2;
+        const yc = (points[i].y + points[i + 1].y) / 2;
+        ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+      }
+      ctx.lineTo(points[n - 1].x, points[n - 1].y);
+      ctx.lineTo(w, h);
+      ctx.lineTo(0, h);
+      ctx.closePath();
+      ctx.fill();
+
+      // 5. Stroke smooth curve
+      ctx.strokeStyle = "#0284c7";
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 0; i < n - 1; i++) {
+        const xc = (points[i].x + points[i + 1].x) / 2;
+        const yc = (points[i].y + points[i + 1].y) / 2;
+        ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+      }
+      ctx.lineTo(points[n - 1].x, points[n - 1].y);
+      ctx.stroke();
+
+      // 6. Draw clean point dots on key hours (0h, 6h, 12h, 18h, 24h)
+      [0, 6, 12, 18, 24].forEach(idx => {
+        if (points[idx]) {
+          const pt = points[idx];
+          ctx.fillStyle = pt.aqi > 100 ? "#ef4444" : "#0284c7";
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, 4, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = isDark ? "#11131a" : "#ffffff";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+      });
+
+      updateChartScrubHUD(selectedStepIndex);
     }
 
-    // CROSSHAIR INTERACTION
+    // CHART HOVER & SCRUB
     function onChartMouseMove(e) {
       if (!currentData || !currentData.timeline) return;
-      const wrapper = document.getElementById("charts-wrapper");
-      const rect = wrapper.getBoundingClientRect();
+      const wrap = document.getElementById("chart-wrapper");
+      const rect = wrap.getBoundingClientRect();
       const mouseX = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
 
       const n = currentData.timeline.length;
@@ -911,63 +993,74 @@
         ch.style.display = "block";
         ch.style.left = `${snapX}px`;
       }
-      updateCrosshairHUD(stepIndex);
+      updateChartScrubHUD(stepIndex);
     }
 
-    function updateCrosshairHUD(index) {
+    function onChartMouseLeave() {
+      const ch = document.getElementById("chart-crosshair");
+      if (ch) ch.style.display = "none";
+      updateChartScrubHUD(12); // reset to +12h mid-point
+    }
+
+    function updateChartScrubHUD(idx) {
       if (!currentData || !currentData.timeline) return;
-      const pt = currentData.timeline[index];
+      const pt = currentData.timeline[idx];
       if (!pt) return;
 
       document.getElementById("hud-offset").textContent = pt.hour_offset;
-      document.getElementById("hud-time").textContent = pt.display_time;
       document.getElementById("hud-aqi").textContent = Math.round(pt.aqi);
       document.getElementById("hud-pm25").textContent = pt.pm25.toFixed(1);
     }
 
-    // RENDER RAW TABLE
-    function renderRawTable(timeline) {
+    // RENDER HOURLY TABLE
+    function renderTableRows(timeline) {
       const tbody = document.getElementById("raw-table-tbody");
       if (!tbody || !timeline) return;
 
-      tbody.innerHTML = timeline.map(row => `
-        <tr class="hover:bg-slate-800/40">
-          <td class="p-2 text-slate-400">${row.step_index}</td>
-          <td class="p-2 font-bold text-sky-400">${row.hour_offset}</td>
-          <td class="p-2 text-slate-300">${row.iso_timestamp}</td>
-          <td class="p-2 font-black text-right ${row.is_unhealthy ? 'text-red-400' : 'text-emerald-400'}">${row.aqi.toFixed(1)}</td>
-          <td class="p-2 text-right text-white">${row.pm25.toFixed(1)}</td>
-          <td class="p-2 text-right text-white">${row.no2.toFixed(1)}</td>
-          <td class="p-2 text-right text-white">${row.co.toFixed(2)}</td>
-          <td class="p-2 text-center">
-            <span class="px-1.5 py-0.5 text-[9px] font-bold ${row.is_unhealthy ? 'bg-red-600 text-white' : 'bg-emerald-500 text-black'}">
-              ${row.flag}
-            </span>
-          </td>
-        </tr>
-      `).join("");
+      tbody.innerHTML = timeline.map(row => {
+        const cat = getCategoryMeta(row.aqi);
+        return `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+            <td class="p-3 font-semibold text-sky-600 dark:text-sky-400 num-font">${row.hour_offset}</td>
+            <td class="p-3 text-slate-500 dark:text-slate-400">${row.iso_timestamp}</td>
+            <td class="p-3 text-right font-bold num-font ${row.is_unhealthy ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}">
+              ${row.aqi.toFixed(1)}
+            </td>
+            <td class="p-3 text-right num-font">${row.pm25.toFixed(1)}</td>
+            <td class="p-3 text-right num-font">${row.no2.toFixed(1)}</td>
+            <td class="p-3 text-right num-font">${row.co.toFixed(2)}</td>
+            <td class="p-3 text-center">
+              <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold ${cat.badgeBg}">
+                ${cat.name}
+              </span>
+            </td>
+          </tr>
+        `;
+      }).join("");
     }
 
+    // VIEW SWITCHER
     function switchView(viewName) {
-      const termView = document.getElementById("view-terminal");
-      const tblView = document.getElementById("view-table");
-      const btnTerm = document.getElementById("btn-view-terminal");
-      const btnTbl = document.getElementById("btn-view-table");
+      const vDash = document.getElementById("view-dashboard");
+      const vTable = document.getElementById("view-table");
+      const bDash = document.getElementById("tab-btn-dashboard");
+      const bTable = document.getElementById("tab-btn-table");
 
-      if (viewName === "terminal") {
-        termView.classList.remove("hidden");
-        tblView.classList.add("hidden");
-        btnTerm.className = "px-3 py-1.5 bg-sky-600 text-white font-bold flex items-center gap-1.5 text-xs";
-        btnTbl.className = "px-3 py-1.5 bg-termPanel text-slate-400 hover:text-white font-bold flex items-center gap-1.5 text-xs border-l border-termBorder";
-        if (currentData) drawStepCharts(currentData.timeline);
+      if (viewName === "dashboard") {
+        vDash.classList.remove("hidden");
+        vTable.classList.add("hidden");
+        bDash.className = "px-3 py-1.5 rounded-md text-xs font-semibold bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm flex items-center gap-1.5 transition-all";
+        bTable.className = "px-3 py-1.5 rounded-md text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-1.5 transition-all";
+        if (currentData) drawForecastTimeline(currentData.timeline);
       } else {
-        termView.classList.add("hidden");
-        tblView.classList.remove("hidden");
-        btnTbl.className = "px-3 py-1.5 bg-sky-600 text-white font-bold flex items-center gap-1.5 text-xs border-l border-termBorder";
-        btnTerm.className = "px-3 py-1.5 bg-termPanel text-slate-400 hover:text-white font-bold flex items-center gap-1.5 text-xs";
+        vDash.classList.add("hidden");
+        vTable.classList.remove("hidden");
+        bTable.className = "px-3 py-1.5 rounded-md text-xs font-semibold bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm flex items-center gap-1.5 transition-all";
+        bDash.className = "px-3 py-1.5 rounded-md text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-1.5 transition-all";
       }
     }
 
+    // CSV EXPORT
     async function downloadCSV() {
       const payload = getPayload();
       try {
@@ -980,7 +1073,7 @@
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `aerocast_telemetry_${Date.now()}.csv`;
+        a.download = `aerocast_24h_forecast_${Date.now()}.csv`;
         document.body.appendChild(a);
         a.click();
         a.remove();
@@ -989,15 +1082,16 @@
       }
     }
 
+    // ACCORDION TOGGLES
     function toggleSecondaryAccordion() {
       const p = document.getElementById("secondary-panel");
       const ind = document.getElementById("accordion-indicator");
       if (p.classList.contains("hidden")) {
         p.classList.remove("hidden");
-        ind.textContent = "[ - COLLAPSE ]";
+        ind.textContent = "Show Less -";
       } else {
         p.classList.add("hidden");
-        ind.textContent = "[ + EXPAND ]";
+        ind.textContent = "Show More +";
       }
     }
 
@@ -1006,29 +1100,30 @@
       const ind = document.getElementById("benchmarks-toggle-indicator");
       if (p.classList.contains("hidden")) {
         p.classList.remove("hidden");
-        ind.textContent = "[ - COLLAPSE BENCHMARKS ]";
+        ind.textContent = "Hide Benchmarks -";
       } else {
         p.classList.add("hidden");
-        ind.textContent = "[ + EXPAND BENCHMARKS ]";
+        ind.textContent = "View 7-Model Evaluation Matrix +";
       }
     }
 
-    function applyTerminalPreset(p, idx) {
+    // APPLY PRESET
+    function applyPreset(p, idx) {
       activePresetId = p.id;
-      
-      // Update active button state
-      const btns = document.querySelectorAll(".preset-btn");
+
+      // Update button styles
+      const btns = document.querySelectorAll(".preset-pill");
       btns.forEach((b, i) => {
         if (i === idx) {
-          b.classList.add("active");
+          b.className = "preset-pill px-3 py-1 rounded-full text-xs font-semibold bg-sky-600 text-white shadow-sm flex items-center gap-1.5 transition-all";
         } else {
-          b.classList.remove("active");
+          b.className = "preset-pill px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-appDarkCardSub hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-appDarkBorder flex items-center gap-1.5 transition-all";
         }
       });
 
       document.getElementById("in-aqi").value = p.data.aqi;
       document.getElementById("rng-aqi").value = p.data.aqi;
-      
+
       document.getElementById("in-prev-aqi").value = p.data.prev_aqi;
       document.getElementById("rng-prev-aqi").value = p.data.prev_aqi;
 
@@ -1049,64 +1144,63 @@
     }
 
     function resetDefaults() {
-      if (presets.length > 2) applyTerminalPreset(presets[2], 2);
+      if (presets.length > 2) applyPreset(presets[2], 2);
     }
 
+    // THEME TOGGLE
     function toggleTheme() {
       const html = document.documentElement;
-      const btn = document.getElementById("theme-btn-text");
+      const icon = document.getElementById("theme-icon");
       if (html.classList.contains("dark")) {
         html.classList.remove("dark");
-        btn.textContent = "LIGHT MODE";
+        icon.setAttribute("data-lucide", "moon");
       } else {
         html.classList.add("dark");
-        btn.textContent = "DARK MODE";
+        icon.setAttribute("data-lucide", "sun");
       }
-      if (currentData) drawStepCharts(currentData.timeline);
+      lucide.createIcons();
+      if (currentData) drawForecastTimeline(currentData.timeline);
     }
 
-    // Live clock
-    setInterval(() => {
-      const now = new Date();
-      document.getElementById("live-utc-clock").textContent = now.toUTCString().replace("GMT", "UTC");
-    }, 1000);
-
-    // Initializer
+    // INITIALIZATION
     window.addEventListener("DOMContentLoaded", async () => {
       initInputs();
 
-      // Load Presets as clean buttons
+      // Load presets
       try {
         const presResp = await fetch("/api/presets");
         presets = await presResp.json();
-        const cont = document.getElementById("presets-button-group");
+        const cont = document.getElementById("presets-container");
         if (cont) {
           cont.innerHTML = presets.map((p, idx) => `
-            <button onclick='applyTerminalPreset(presets[${idx}], ${idx})' class="btn-term preset-btn ${p.id === activePresetId ? 'active' : ''}">
-              <span class="inline-block w-1.5 h-1.5 ${p.id === 'clean_baseline' ? 'bg-emerald-400' : (p.id === 'inversion_severe' ? 'bg-red-500' : 'bg-amber-400')}"></span>
+            <button onclick='applyPreset(presets[${idx}], ${idx})' class="preset-pill px-3 py-1 rounded-full text-xs ${p.id === activePresetId ? 'font-semibold bg-sky-600 text-white shadow-sm' : 'font-medium bg-slate-100 dark:bg-appDarkCardSub hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-appDarkBorder'} flex items-center gap-1.5 transition-all">
+              <span class="w-1.5 h-1.5 rounded-full ${p.id === 'clean_baseline' ? 'bg-emerald-400' : (p.id === 'inversion_severe' ? 'bg-rose-500' : 'bg-amber-400')}"></span>
               ${p.label}
             </button>
           `).join("");
         }
       } catch (e) {
-        console.error(e);
+        console.error("Presets error:", e);
       }
 
-      // Load Benchmarks table
+      // Load Benchmarks
       try {
         const benchResp = await fetch("/api/benchmarks");
         const benchmarks = await benchResp.json();
         const tbody = document.getElementById("benchmark-tbody");
         if (tbody) {
           tbody.innerHTML = benchmarks.models.map(m => `
-            <tr class="${m.rank === 'CHAMPION' ? 'bg-emerald-950/60 font-bold text-emerald-300' : 'hover:bg-slate-800/40'}">
-              <td class="p-2 font-bold">${m.name}</td>
-              <td class="p-2 text-slate-400">${m.family}</td>
-              <td class="p-2 font-mono">${m.acc}</td>
-              <td class="p-2 font-mono font-bold">${m.f1}</td>
-              <td class="p-2 font-mono">${m.auc}</td>
-              <td class="p-2">
-                <span class="px-1.5 py-0.2 text-[9px] font-bold ${m.rank === 'CHAMPION' ? 'bg-emerald-500 text-black' : 'bg-slate-800 text-slate-400'}">
+            <tr class="${m.rank === 'CHAMPION' ? 'bg-emerald-50/70 dark:bg-emerald-950/30 font-semibold text-emerald-900 dark:text-emerald-200' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40'}">
+              <td class="p-2.5 font-medium flex items-center gap-1.5">
+                ${m.rank === 'CHAMPION' ? '<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600 inline"></i>' : ''}
+                ${m.name}
+              </td>
+              <td class="p-2.5 text-slate-500 dark:text-slate-400">${m.family}</td>
+              <td class="p-2.5 num-font">${m.acc}</td>
+              <td class="p-2.5 num-font font-bold">${m.f1}</td>
+              <td class="p-2.5 num-font">${m.auc}</td>
+              <td class="p-2.5">
+                <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${m.rank === 'CHAMPION' ? 'bg-emerald-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}">
                   ${m.rank}
                 </span>
               </td>
@@ -1114,7 +1208,7 @@
           `).join("");
         }
       } catch (e) {
-        console.error(e);
+        console.error("Benchmarks error:", e);
       }
 
       fetchTelemetry();
@@ -1122,7 +1216,7 @@
     });
 
     window.addEventListener("resize", () => {
-      if (currentData) drawStepCharts(currentData.timeline);
+      if (currentData) drawForecastTimeline(currentData.timeline);
     });
   </script>
 </body>

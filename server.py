@@ -45,12 +45,12 @@ EPA_COLORS = {
     "Severe": {"bg": "#7E0023", "text": "#FFFFFF", "border": "#550015", "range": "401 - 500"}
 }
 
-# 1-Click Terminal Scenarios
+# 1-Click Clean City Presets
 TERMINAL_PRESETS = [
     {
         "id": "clean_baseline",
-        "code": "SCN-01:CLEAN",
-        "label": "COASTAL / PRISTINE BASELINE",
+        "code": "KOCHI-COAST",
+        "label": "Kochi (Clean Coastal)",
         "location": "Kochi Station #04",
         "data": {
             "aqi": 38.0, "prev_aqi": 42.0, "pm25": 14.0, "no2": 8.5, "co": 0.40,
@@ -60,8 +60,8 @@ TERMINAL_PRESETS = [
     },
     {
         "id": "urban_satisfactory",
-        "code": "SCN-02:SATIS",
-        "label": "METRO SPRING BACKGROUND",
+        "code": "BLR-SPRING",
+        "label": "Bengaluru (Satisfactory)",
         "location": "Bengaluru BTM #01",
         "data": {
             "aqi": 76.0, "prev_aqi": 82.0, "pm25": 32.0, "no2": 21.0, "co": 0.75,
@@ -71,8 +71,8 @@ TERMINAL_PRESETS = [
     },
     {
         "id": "traffic_moderate",
-        "code": "SCN-03:MOD-WARN",
-        "label": "CONGESTED TRAFFIC CORRIDOR",
+        "code": "MUM-TRAFFIC",
+        "label": "Mumbai (Traffic Corridor)",
         "location": "Mumbai Sion #02",
         "data": {
             "aqi": 138.0, "prev_aqi": 125.0, "pm25": 65.0, "no2": 42.0, "co": 1.30,
@@ -82,8 +82,8 @@ TERMINAL_PRESETS = [
     },
     {
         "id": "industrial_poor",
-        "code": "SCN-04:POOR",
-        "label": "PRE-WINTER INDUSTRIAL SMOG",
+        "code": "KNP-SMOG",
+        "label": "Kanpur (Pre-Winter Smog)",
         "location": "Kanpur Sharda #01",
         "data": {
             "aqi": 245.0, "prev_aqi": 210.0, "pm25": 118.0, "no2": 62.0, "co": 2.10,
@@ -93,8 +93,8 @@ TERMINAL_PRESETS = [
     },
     {
         "id": "inversion_severe",
-        "code": "SCN-05:CRIT-HAZ",
-        "label": "DELHI NCR WINTER INVERSION",
+        "code": "DEL-INVERSION",
+        "label": "Delhi NCR (Winter Inversion)",
         "location": "Delhi Anand Vihar #03",
         "data": {
             "aqi": 412.0, "prev_aqi": 385.0, "pm25": 285.0, "no2": 98.0, "co": 3.90,
@@ -260,9 +260,9 @@ def predict_telemetry(req: ForecastRequest):
 
     # Text warning banner
     if is_unhealthy:
-        warning_banner = f"CRITICAL 24H EARLY WARNING: FORECAST AQI ({round(pred_aqi,1)}) BREACHES UNHEALTHY THRESHOLD (>100.0). PRIMARY DRIVER: {driver_info['pollutant']} ({driver_info['value']} {driver_info['unit']}, {driver_info['pct_of_limit']}% OF NAAQS CEILING)."
+        warning_banner = f"Early Warning Alert: Tomorrow's forecast AQI ({round(pred_aqi, 1)}) exceeds the unhealthy threshold (>100). Primary pollutant: {driver_info['pollutant']} ({driver_info['value']} {driver_info['unit']})."
     else:
-        warning_banner = f"NOMINAL: 24H FORECAST AQI ({round(pred_aqi,1)}) REMAINS WITHIN STATUTORY HEALTHY BOUNDS (<=100.0). PRIMARY POLLUTANT: {driver_info['pollutant']} ({driver_info['value']} {driver_info['unit']})."
+        warning_banner = f"Air Quality Safe: Tomorrow's forecast AQI ({round(pred_aqi, 1)}) remains within healthy limits (<=100). Primary pollutant: {driver_info['pollutant']} ({driver_info['value']} {driver_info['unit']})."
 
     # Actionable Operational Protocols
     protocols = [
